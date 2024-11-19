@@ -16,6 +16,7 @@ const config: Config = {
             fontFamily: {
                 mouse: ['Mouse Memoirs', 'sans-serif'],
                 poppins: ['Poppins', 'sans-serif'],
+                quicksand: ['Quicksand', 'sans-serif'],
             },
         },
     },
