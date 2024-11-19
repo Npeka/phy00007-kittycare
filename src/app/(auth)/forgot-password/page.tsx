@@ -65,9 +65,13 @@ export default function ForgotPasswordPage() {
                 />
 
                 <LoadingButton
-                    className="m-auto mt-4 rounded-full px-10 py-2 font-bold text-black"
+                    sx={{
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                        padding: '0.5rem 2.5rem',
+                        fontWeight: 'bold',
+                    }}
                     type="submit"
-                    size="large"
                     variant="contained"
                     loading={loading}
                 >
