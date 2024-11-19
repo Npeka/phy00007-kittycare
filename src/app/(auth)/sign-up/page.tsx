@@ -14,19 +14,17 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import FormLayout from '@/ui/layout/form-layout';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { redirect } from 'next/navigation';
-import { signUp } from '@/firebase/auth';
+import { signUpUser } from '@/firebase/auth';
 
 export default function SignUpPage() {
     const [loading, setLoading] = useState(false);
     const [formValues, setFormValues] = useState({
-        firstname: '',
-        lastname: '',
+        fullname: '',
         email: '',
         password: '',
     });
     const [errors, setErrors] = useState({
-        firstname: '',
-        lastname: '',
+        fullname: '',
         email: '',
         password: '',
     });
@@ -39,13 +37,17 @@ export default function SignUpPage() {
 
     const validateForm = () => {
         const newErrors = {
-            firstname: formValues.firstname ? '' : 'First name is required',
-            lastname: formValues.lastname ? '' : 'Last name is required',
-            email: formValues.email ? '' : 'Email is required',
+            fullname:
+                formValues.fullname.length >= 6
+                    ? ''
+                    : 'Họ và tên phải có ít nhất 6 ký tự',
+            email: formValues.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+                ? ''
+                : 'Email không hợp lệ',
             password:
                 formValues.password.length >= 6
                     ? ''
-                    : 'Password must be at least 6 characters',
+                    : 'Mật khẩu phải có ít nhất 6 ký tự',
         };
         setErrors(newErrors);
 
@@ -58,47 +60,35 @@ export default function SignUpPage() {
 
         setLoading(true);
         try {
-            const response = await signUp(
-                formValues.firstname,
-                formValues.lastname,
+            await signUpUser(
+                formValues.fullname,
                 formValues.email,
                 formValues.password,
             );
-            console.log(response);
+            redirect('/');
         } catch (error) {
             console.error(error);
         }
         setLoading(false);
-        redirect('/');
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <FormLayout title="Đăng ký">
                 <TextField
-                    id="firstname"
-                    name="firstname"
+                    id="fullname"
+                    name="fullname"
                     type="text"
-                    label="Tên"
+                    label="Họ và tên"
                     variant="standard"
+                    size="small"
                     required
-                    value={formValues.firstname}
+                    value={formValues.fullname}
                     onChange={handleInputChange}
-                    error={Boolean(errors.firstname)}
-                    helperText={errors.firstname}
-                />
-
-                <TextField
-                    id="lastname"
-                    name="lastname"
-                    type="text"
-                    label="Họ"
-                    variant="standard"
-                    required
-                    value={formValues.lastname}
-                    onChange={handleInputChange}
-                    error={Boolean(errors.lastname)}
-                    helperText={errors.lastname}
+                    error={Boolean(errors.fullname)}
+                    helperText={
+                        errors.fullname || 'Họ và tên phải có ít nhất 6 ký tự'
+                    }
                 />
 
                 <TextField
@@ -107,6 +97,7 @@ export default function SignUpPage() {
                     type="email"
                     label="Email"
                     variant="standard"
+                    size="small"
                     required
                     value={formValues.email}
                     onChange={handleInputChange}
@@ -120,11 +111,14 @@ export default function SignUpPage() {
                     type={showPassword ? 'text' : 'password'}
                     label="Mật khẩu"
                     variant="standard"
+                    size="small"
                     required
                     value={formValues.password}
                     onChange={handleInputChange}
                     error={Boolean(errors.password)}
-                    helperText={errors.password}
+                    helperText={
+                        errors.password || 'Mật khẩu phải có ít nhất 6 ký tự'
+                    }
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
@@ -147,19 +141,17 @@ export default function SignUpPage() {
                 />
 
                 <FormControlLabel
-                    control={<Checkbox required />}
-                    label="Tôi đã đọc và đồng ý với điều khoản và ứng dụng"
+                    control={<Checkbox required color="default" />}
+                    label="Tôi đã đọc và đồng ý với điều khoản sử dụng"
                 />
 
                 <LoadingButton
                     sx={{
                         margin: 'auto',
-                        borderRadius: '9999px',
                         padding: '0.5rem 2.5rem',
                         fontWeight: 'bold',
                     }}
                     type="submit"
-                    size="large"
                     variant="contained"
                     loading={loading}
                 >
