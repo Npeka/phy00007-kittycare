@@ -127,7 +127,14 @@ export default function ResetPasswordPage() {
                 />
 
                 <LoadingButton
-                    className="m-auto rounded-full px-10 py-2 font-bold text-black"
+                    sx={{
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                        borderRadius: '999px',
+                        padding: '0.5rem 2.5rem',
+                        fontWeight: 'bold',
+                        color: 'black',
+                    }}
                     type="submit"
                     size="large"
                     variant="contained"
