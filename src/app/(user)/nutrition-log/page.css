@@ -1,0 +1,9 @@
+.fc .fc-button-primary {
+    color: #000 !important;
+    background-color: #daebce !important;
+    border-color: #ffffff !important;
+}
+
+td.fc-daygrid-day.fc-day.fc-day-today {
+    background-color: #daebce !important;
+}
