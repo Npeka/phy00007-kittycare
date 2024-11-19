@@ -12,18 +12,15 @@ export default function FormLayout({
     return (
         <FormControl
             sx={{
-                gap: '1.5rem',
-                padding: '3rem 7rem',
-                minHeight: '30rem',
+                gap: '1rem',
+                padding: '2rem 4.5rem',
+                minHeight: '28rem',
+                justifyContent: 'center',
             }}
+            size="small"
             fullWidth
         >
-            <Typography
-                className="h-"
-                sx={{ fontWeight: 'bold' }}
-                variant="h3"
-                align="center"
-            >
+            <Typography sx={{ fontWeight: 'bold' }} variant="h4" align="center">
                 {title}
             </Typography>
             {children}

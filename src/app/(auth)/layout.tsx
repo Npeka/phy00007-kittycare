@@ -12,8 +12,8 @@ export default function AuthLayout({
             <Typography
                 sx={{
                     fontFamily: 'Mouse Memoirs',
-                    fontSize: '9rem',
-                    WebkitTextStroke: '4px #989c94',
+                    fontSize: '8rem',
+                    WebkitTextStroke: '3px #989c94',
                     marginBottom: '1rem',
                 }}
                 variant="h1"
@@ -23,7 +23,7 @@ export default function AuthLayout({
                 KittyCare
             </Typography>
 
-            <div className="m-auto max-w-2xl rounded-3xl bg-white">
+            <div className="m-auto max-w-xl rounded-2xl bg-white">
                 <Suspense fallback={<Loading />}>{children}</Suspense>
             </div>
         </div>
