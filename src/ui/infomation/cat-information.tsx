@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { TextField, Box } from '@mui/material';
+import { TitleSection } from '@/ui/common';
 import LoadingButton from '@mui/lab/LoadingButton';
-import TitleSection from '@/ui/common/title-section';
 
 export default function CatInformation() {
     const [loading, setLoading] = useState(false);

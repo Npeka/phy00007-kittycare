@@ -3,8 +3,7 @@
 import Image from 'next/image';
 import cat from '@/public/home/my-cat.jpg';
 import { Water, Food, Temperature, Humidity } from '@/ui/home/pet-environment';
-import Calender from '@/ui/home/calender';
-import Chart from '@/ui/home/chart';
+import { Calender, Chart } from '@/ui/home';
 
 export default function HomePage() {
     return (

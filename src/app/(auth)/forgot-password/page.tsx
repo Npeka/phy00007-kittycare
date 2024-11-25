@@ -1,10 +1,10 @@
 'use client';
-import { useState } from 'react';
 import Link from 'next/link';
-import { TextField, Typography } from '@mui/material';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormLayout from '@/ui/layout/form-layout';
+import { useState } from 'react';
 import { redirect } from 'next/navigation';
+import { TextField, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { FormLayout } from '@/ui/layout';
 
 export default function ForgotPasswordPage() {
     const [loading, setLoading] = useState(false);

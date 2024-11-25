@@ -17,8 +17,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-    title: 'KittyCat',
-    description: 'KittyCat is a web IOT project for taking care of your cat.',
+    title: 'KittyCare',
+    description: 'KittyCare is a web IOT project for taking care of your cat.',
 };
 
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';

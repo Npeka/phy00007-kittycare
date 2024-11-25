@@ -1,7 +1,9 @@
 import { Divider } from '@mui/material';
-import OwnerInformation from '@/ui/infomation/owner-information';
-import CatInformation from '@/ui/infomation/cat-information';
-import ChangePassword from '@/ui/infomation/change-password';
+import {
+    OwnerInformation,
+    ChangePassword,
+    CatInformation,
+} from '@/ui/infomation';
 
 export default function Page() {
     return (

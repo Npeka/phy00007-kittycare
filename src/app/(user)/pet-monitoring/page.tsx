@@ -1,5 +1,4 @@
-import CameraLive from '@/ui/pet-monitoring/camera-live';
-import DataStorageHistory from '@/ui/pet-monitoring/data-storage-history';
+import { CameraLive, DataStorageHistory } from '@/ui/pet-monitoring';
 
 export default function PetMonitoring() {
     return (

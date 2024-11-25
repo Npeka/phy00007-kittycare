@@ -1,5 +1,5 @@
 import { Box, Typography, Card, CardMedia } from '@mui/material';
-import TitleSection from '@/ui/common/title-section';
+import { TitleSection } from '@/ui/common';
 
 export default function CameraLive() {
     const streamUrl =

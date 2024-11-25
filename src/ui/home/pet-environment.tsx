@@ -1,12 +1,14 @@
-import { Card, CardContent, Typography } from '@mui/material';
 import Image from 'next/image';
-import food from '@/public/home/food.svg';
-import water from '@/public/home/water.svg';
-import temperatureIcon from '@/public/home/temperature-icon.svg';
-import humidityIcon from '@/public/home/humidity-icon.svg';
-import temperatureBg from '@/public/home/temperature-bg.svg';
-import humidityBg from '@/public/home/humidity-bg.svg';
-import MeasurementUnit from '@/ui/common/measurement-unit';
+import { Card, CardContent, Typography } from '@mui/material';
+import {
+    food,
+    water,
+    temperatureIcon,
+    humidityIcon,
+    temperatureBg,
+    humidityBg,
+} from '@/public/home';
+import { MeasurementUnit } from '@/ui/common';
 
 const HomeCard = ({ children }: { children: React.ReactNode }) => {
     return (

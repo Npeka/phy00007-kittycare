@@ -1,16 +1,15 @@
 'use client';
 import { useState } from 'react';
+import { redirect } from 'next/navigation';
 import {
     InputAdornment,
     IconButton,
     TextField,
     Typography,
 } from '@mui/material';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import FormLayout from '@/ui/layout/form-layout';
-import { redirect } from 'next/navigation';
+import { LoadingButton } from '@mui/lab';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { FormLayout } from '@/ui/layout';
 
 export default function ResetPasswordPage() {
     const [loading, setLoading] = useState(false);

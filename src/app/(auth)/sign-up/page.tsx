@@ -1,7 +1,7 @@
 'use client';
-
 import Link from 'next/link';
 import { useState } from 'react';
+import { redirect } from 'next/navigation';
 import {
     InputAdornment,
     Checkbox,
@@ -10,10 +10,9 @@ import {
     Typography,
     FormControlLabel,
 } from '@mui/material';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormLayout from '@/ui/layout/form-layout';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { redirect } from 'next/navigation';
+import { LoadingButton } from '@mui/lab';
+import { FormLayout } from '@/ui/layout';
 import { signUpUser } from '@/firebase/auth';
 
 export default function SignUpPage() {

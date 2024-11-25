@@ -1,6 +1,5 @@
 import { Divider } from '@mui/material';
-import InformationPanel from '@/ui/features/information-panel';
-import ControlPanel from '@/ui/features/control-panel';
+import { ControlPanel, InformationPanel } from '@/ui/features';
 
 export default function FeaturesPage() {
     return (
