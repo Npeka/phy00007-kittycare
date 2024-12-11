@@ -3,22 +3,28 @@ import { useState, useEffect, useRef } from 'react';
 import { Box, Paper, TextField, IconButton, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import chatIcon from '@/public/chatbot/chat-icon.png';
-
-interface Message {
-    text: string;
-    sender: 'user' | 'bot';
-}
+import { useChat } from "ai/react";
 
 export default function Chatbot(): JSX.Element {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [newMessage, setNewMessage] = useState<string>('');
+    // const [newMessage, setNewMessage] = useState<string>('');
     const chatContainerRef = useRef<HTMLDivElement>(null);
+    
 
     const toggleChat = () => {
         setIsOpen(!isOpen);
     };
 
+    const {  messages, input, handleInputChange, handleSubmit } = useChat({
+        api: 'api/send-msg',
+     
+        onError: (e) => {
+            console.log(e)
+        }
+        
+    });
+
+    /*
     const handleSendMessage = () => {
         if (newMessage.trim()) {
             setMessages((prev) => [
@@ -26,22 +32,22 @@ export default function Chatbot(): JSX.Element {
                 { text: newMessage.trim(), sender: 'user' },
             ]);
             setNewMessage('');
-
-            setTimeout(() => {
-                setMessages((prev) => [
-                    ...prev,
-                    { text: 'This is a bot reply.', sender: 'bot' },
-                ]);
-            }, 1000);
+            
+            const responseText = response;
+            setMessages((prev) => [
+                ...prev,
+                { text: responseText, sender: 'bot' },
+            ]);
         }
     };
+    */
 
     useEffect(() => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop =
                 chatContainerRef.current.scrollHeight;
         }
-    }, [messages]);
+    });
 
     return (
         <div className="fixed bottom-4 right-4 z-50">
@@ -74,7 +80,7 @@ export default function Chatbot(): JSX.Element {
                         position: 'absolute',
                         bottom: '4rem',
                         right: '1.5rem',
-                        height: '24rem',
+                        height: '26rem',
                         width: '24rem',
                         padding: '1rem',
                         display: 'flex',
@@ -101,20 +107,21 @@ export default function Chatbot(): JSX.Element {
                                     sx={{
                                         display: 'flex',
                                         justifyContent: `${
-                                            message.sender === 'user'
+                                            index % 2 == 0
                                                 ? 'flex-end'
                                                 : 'flex-start'
                                         }`,
                                     }}
                                 >
                                     <p
-                                        className={`max-w-[65%] break-words rounded-lg p-2 text-sm ${
-                                            message.sender === 'user'
+                                        className={`max-w-[65%] text-justify rounded-lg p-2 text-sm ${
+                                            index % 2 == 0
                                                 ? 'bg-zinc-200 text-gray-800'
                                                 : 'bg-[#DAEBCE] text-gray-800'
                                         }`}
+                                        style={{ whiteSpace: 'pre-wrap' }}
                                     >
-                                        {message.text}
+                                        {message.content}
                                     </p>
                                 </Box>
                             ))
@@ -132,11 +139,11 @@ export default function Chatbot(): JSX.Element {
                             fullWidth
                             variant="outlined"
                             size="small"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
+                            value={input}
+                            onChange={handleInputChange}
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
-                                    handleSendMessage();
+                                    handleSubmit();
                                 }
                             }}
                         />
@@ -144,7 +151,7 @@ export default function Chatbot(): JSX.Element {
                             variant="contained"
                             color="primary"
                             size="small"
-                            onClick={handleSendMessage}
+                            onClick={handleSubmit}
                         >
                             <SendIcon fontSize="small" />
                         </Button>
