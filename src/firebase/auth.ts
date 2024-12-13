@@ -15,6 +15,9 @@ import {
     collection,
     addDoc,
 } from 'firebase/firestore';
+import { ref, onValue, update, set } from 'firebase/database';
+import { database } from '@/firebase/config';
+import { Data } from '@/types/firebase';
 
 // import { auth, db } from './config';
 import app from './config';
@@ -49,6 +52,30 @@ export const signUpUser = async (
             { cat: `/cats/${catDocRef.id}` },
             { merge: true },
         );
+
+        const dataRef = user.uid;
+        const nullObj: Data = {
+            auto: {
+                door: false,
+                fan: false,
+                light: false,
+            },
+            devices: {
+                door: false,
+                fan: false,
+                laser: false,
+                light: false,
+                refill_food: false,
+                refill_water: false,
+            },
+            environment: {
+                drink: 0,
+                food: 0,
+                humidity: 0,
+                temperature: 0,
+            },
+        }
+        set(ref(database, dataRef), nullObj);
     } catch (error) {
         console.error(error);
         throw error;

@@ -29,6 +29,9 @@ export default function HomePage() {
         const envRef = ref(database, `${user.uid}/environment`);
         onValue(envRef, (snapshot) => {
             const data = snapshot.val();
+            if (data === null) {
+                return;
+            }
             setEnv(data);
         });
     }, [user]);

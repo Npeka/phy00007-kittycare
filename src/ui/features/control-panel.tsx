@@ -50,6 +50,9 @@ export default function ControlPanel() {
         const envRef = ref(database, `${user.uid}/devices`);
         onValue(envRef, (snapshot) => {
             const data = snapshot.val();
+            if (data === null) {
+                return;
+            }
             setDevices(data);
         });
     }, [user]);
