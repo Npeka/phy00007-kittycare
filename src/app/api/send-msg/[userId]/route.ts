@@ -9,6 +9,7 @@ import { HttpResponseOutputParser } from 'langchain/output_parsers';
 import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic'
 import { db } from '@/firebase/admin';
+import { Environment } from '@/types/firebase';
 /**
  * Basic memory formatter that stringifies and passes
  * message history directly into the model.
@@ -22,6 +23,9 @@ const TEMPLATE = `KittyCare là một ứng dụng IoT chăm sóc thú cưng (m�
 
 Current conversation:
 {chat_history}
+
+Current environment:
+{environment}
 
 user: {input}
 assistant:`;
@@ -37,11 +41,23 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
         const currentMessageContent = messages.at(-1).content;
         
         const { userId } = await params;
-        const ref = db.ref( `${userId}/environment`);
-        ref.once("value", function(snapshot) {
-            console.log(snapshot.val());
-        });
+        
 
+        const getDataFromFirebase = (): Promise<Environment> => {
+            return new Promise((resolve, reject) => {
+                const ref = db.ref(`${userId}/environment`);
+                ref.once('value', (snapshot) => {
+                    if (snapshot.exists()) {
+                        resolve(snapshot.val());
+                    } else {
+                        reject(new Error('No data found'));
+                    }
+                });
+            });
+        };
+
+        const data : Environment = await getDataFromFirebase();
+        const environment: string = 'Temperature: ' + String(data.temperature) + '°C, Humidity: ' + String(data.humidity) + '% \n';
         const prompt = PromptTemplate.fromTemplate(TEMPLATE);
 
         const model = new ChatOpenAI({
@@ -57,7 +73,7 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
 
         const stream = await chain.stream({
             chat_history: formattedPreviousMessages.join('\n'),
-            //environment: 
+            environment: environment, 
             input: currentMessageContent,
         });
 
