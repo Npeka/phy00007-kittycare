@@ -1,9 +1,6 @@
 'use client';
-
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { usePathname, useRouter } from 'next/navigation';
+import { useContext } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -18,21 +15,13 @@ import {
 import { Notifications } from '@mui/icons-material';
 import Cat from '@/public/sidebar/cat.svg';
 import links from './sidebar-link';
+import { AuthContext } from '@/context/auth-context';
 
 export default function Header() {
-    const router = usePathname();
-    const breadcrumbs = links.find((link) => link.href === router);
-
-    const [user, setUser] = useState<User | null>(null);
-
-    useEffect(() => {
-        const auth = getAuth();
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setUser(user);
-            }
-        });
-    }, []);
+    const pathname = usePathname();
+    const router = useRouter();
+    const breadcrumbs = links.find((link) => link.href === pathname);
+    const user = useContext(AuthContext);
 
     return (
         <AppBar
@@ -54,7 +43,14 @@ export default function Header() {
                 <div className="flex items-center gap-20">
                     <Breadcrumbs aria-label="breadcrumb">
                         <Typography
-                            className="rounded-full bg-[#DAEBCE] px-4 py-2 !font-semibold text-black"
+                            sx={{
+                                borderRadius: '9999px',
+                                backgroundColor: '#DAEBCE',
+                                paddingX: '16px',
+                                paddingY: '8px',
+                                fontWeight: 'bold',
+                                color: 'black',
+                            }}
                             variant="h6"
                         >
                             {breadcrumbs?.label || 'Trang chủ'}
@@ -80,7 +76,7 @@ export default function Header() {
                         </Typography>
                         <Avatar
                             src={user.photoURL || Cat}
-                            alt={"User's avatar"}
+                            alt="User's avatar"
                             sx={{ width: 40, height: 40 }}
                         />
                     </Box>
@@ -91,21 +87,26 @@ export default function Header() {
                             gap: '16px',
                         }}
                     >
-                        <Button variant="outlined" color="success">
-                            <Link href="/sign-up">Đăng ký</Link>
+                        <Button
+                            variant="outlined"
+                            color="success"
+                            onClick={() => router.push('/sign-up')}
+                        >
+                            Đăng ký
                         </Button>
                         <Button
                             variant="contained"
                             sx={{
                                 outline: 'success',
-                                background: 'white',
+                                backgroundColor: 'white',
                                 '&:hover': {
-                                    background: 'white',
-                                    backgroundOpacity: 0.5,
+                                    backgroundColor: 'white',
+                                    opacity: 0.5,
                                 },
                             }}
+                            onClick={() => router.push('/sign-in')}
                         >
-                            <Link href="/sign-in">Đăng nhập</Link>
+                            Đăng nhập
                         </Button>
                     </Box>
                 )}

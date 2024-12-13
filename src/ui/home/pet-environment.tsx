@@ -9,6 +9,7 @@ import {
     humidityBg,
 } from '@/public/home';
 import { MeasurementUnit } from '@/ui/common';
+import { memo } from 'react';
 
 const HomeCard = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -47,37 +48,33 @@ const Status = ({
     );
 };
 
-export const Water = () => {
-    const date = new Date().toLocaleDateString('en-GB');
-    const ml = 300;
+export const Drink = memo(({ value }: { value: number }) => {
+    const date = new Date().toLocaleDateString('vi-VN');
     return (
         <HomeCard>
             <CardContent>
                 <CardTitle>{date}</CardTitle>
-                <MeasurementUnit>{ml}ml</MeasurementUnit>
+                <MeasurementUnit>{value}ml</MeasurementUnit>
             </CardContent>
-            <Image className="mr-4" src={water} alt={'water'} />
+            <Image className="mr-4" src={water} alt={'water'} height={120} />
         </HomeCard>
     );
-};
+});
 
-export const Food = () => {
-    const date = new Date().toLocaleDateString('en-GB');
-    const mg = 2.4;
+export const Food = memo(({ value }: { value: number }) => {
+    const date = new Date().toLocaleDateString('vi-VN');
     return (
         <HomeCard>
             <CardContent>
                 <CardTitle>{date}</CardTitle>
-                <MeasurementUnit>{mg}mg</MeasurementUnit>
+                <MeasurementUnit>{value}mg</MeasurementUnit>
             </CardContent>
-            <Image className="mr-4" src={food} alt={'food'} />
+            <Image className="mr-4" src={food} alt={'food'} height={70} />
         </HomeCard>
     );
-};
+});
 
-export const Temperature = () => {
-    const temperature = 36;
-
+export const Temperature = memo(({ temperature }: { temperature: number }) => {
     let temperatureStatus;
     let statusColor;
 
@@ -117,15 +114,15 @@ export const Temperature = () => {
                     className="absolute bottom-0 left-[2%] w-[96%]"
                     src={temperatureBg}
                     alt="temperature-bg"
+                    style={{ height: 'auto' }}
                 />
             </CardContent>
         </HomeCard>
     );
-};
+});
 
-export const Humidity = () => {
-    const humidity = 30;
-
+export const Humidity = memo(({ humidity }: { humidity: number }) => {
+    console.log('rendering humidity');
     let humidityStatus;
     let statusColor;
 
@@ -159,9 +156,10 @@ export const Humidity = () => {
                 </div>
 
                 <Image
-                    className="absolute bottom-0 left-[2%] w-[96%]"
+                    className="absolute bottom-0 left-[2%] h-auto w-[96%]"
                     src={humidityBg}
                     alt="humidity-bg"
+                    style={{ height: 'auto' }}
                 />
 
                 <Typography variant="h4">
@@ -175,4 +173,4 @@ export const Humidity = () => {
             </CardContent>
         </HomeCard>
     );
-};
+});

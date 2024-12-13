@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
     Button,
     Dialog,
@@ -8,6 +8,8 @@ import {
     DialogTitle,
     TextField,
     Grid,
+    FormControlLabel,
+    Switch,
 } from '@mui/material';
 import {
     lightIcon,
@@ -19,52 +21,124 @@ import {
 } from '@/public/features';
 import ControlItem from './control-item';
 import { TitleSection } from '@/ui/common';
-import { toggleFan } from '@/firebase/features';
+import { AuthContext } from '@/context/auth-context';
+import { ref, onValue, update } from 'firebase/database';
+import { database } from '@/firebase/config';
+import { Devices } from '@/types/firebase';
 
 export default function ControlPanel() {
-    const [lightOn, setLightOn] = useState<boolean>(false);
-    const [fanOn, setFanOn] = useState<boolean>(false);
-    const [doorOn, setDoorOn] = useState<boolean>(false);
-    const [gameOn, setGameOn] = useState<boolean>(false);
-    const [openClosure, setOpenClosure] = useState<boolean>(false);
-
-    const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-    const [schedule, setSchedule] = useState({
-        light: '',
-        fan: '',
-        door: '',
-        game: '',
-        water: '',
-        food: '',
+    const user = useContext(AuthContext);
+    const [devices, setDevices] = useState<Devices>({
+        light: false,
+        fan: false,
+        door: false,
+        laser: false,
+        refill_food: false,
+        refill_water: false,
     });
 
-    const handleToggleFan = async () => {
-        await toggleFan({ deviceId: 'esp32-001', state: !fanOn });
-        setFanOn(!fanOn);
-    };
+    const [schedule, setSchedule] = useState<
+        Partial<Record<keyof Devices, { time: string; status?: boolean }>>
+    >({});
+    const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+    const [intervals, setIntervals] = useState<Record<string, NodeJS.Timeout>>(
+        {},
+    );
 
-    const handleOpenScheduleModal = () => {
-        setScheduleModalOpen(true);
-    };
+    useEffect(() => {
+        if (!user) return;
+        const envRef = ref(database, `${user.uid}/devices`);
+        onValue(envRef, (snapshot) => {
+            const data = snapshot.val();
+            setDevices(data);
+        });
+    }, [user]);
 
-    const handleCloseScheduleModal = () => {
+    function updateDeviceStatus(device: keyof Devices, status: boolean) {
+        if (!user) return;
+        const deviceRef = ref(database, `${user.uid}/devices/`);
+        update(deviceRef, { [device]: status });
+        setDevices((prev) => ({ ...prev, [device]: status }));
+    }
+
+    function scheduleDevice(
+        device: keyof Devices,
+        time: string,
+        status?: boolean,
+    ) {
+        const [hours, minutes] = time.split(':').map(Number);
+        const now = new Date();
+        const target = new Date();
+        target.setHours(hours, minutes, 0, 0);
+
+        if (target < now) {
+            target.setDate(target.getDate() + 1); // Nếu thời gian đã qua, đặt lịch cho ngày mai
+        }
+
+        const delay = target.getTime() - now.getTime();
+
+        // Đặt lịch
+        const intervalId = setTimeout(() => {
+            if (device === 'refill_food' || device === 'refill_water') {
+                updateDeviceStatus(device, true); // Luôn đặt là true
+            } else {
+                updateDeviceStatus(device, status || false);
+            }
+        }, delay);
+
+        setIntervals((prev) => ({ ...prev, [device]: intervalId }));
+    }
+
+    function clearDeviceSchedule(device: keyof Devices) {
+        if (intervals[device]) {
+            clearTimeout(intervals[device]);
+            setIntervals((prev) => {
+                const updated = { ...prev };
+                delete updated[device];
+                return updated;
+            });
+        }
+    }
+
+    function handleScheduleChange(
+        device: keyof Devices,
+        field: 'time' | 'status',
+        value: string | boolean,
+    ) {
+        setSchedule((prev) => ({
+            ...prev,
+            [device]: {
+                ...prev[device],
+                [field]: value,
+            },
+        }));
+    }
+
+    function handleSaveSchedule() {
+        Object.entries(schedule).forEach(([device, { time, status }]) => {
+            if (time) {
+                scheduleDevice(
+                    device as keyof Devices,
+                    time,
+                    device === 'refill_food' || device === 'refill_water'
+                        ? true
+                        : status,
+                );
+            } else {
+                clearDeviceSchedule(device as keyof Devices);
+            }
+        });
         setScheduleModalOpen(false);
-    };
-
-    const handleScheduleChange = (field: string, value: string) => {
-        setSchedule((prev) => ({ ...prev, [field]: value }));
-    };
-
-    const handleSaveSchedule = () => {
-        console.log('Saved schedule:', schedule);
-        handleCloseScheduleModal();
-    };
+    }
 
     return (
         <div className="h-full space-y-4 p-8">
             <TitleSection>Bảng điều khiển</TitleSection>
 
-            <Button variant="contained" onClick={handleOpenScheduleModal}>
+            <Button
+                variant="contained"
+                onClick={() => setScheduleModalOpen(true)}
+            >
                 Đặt lịch trước
             </Button>
 
@@ -72,121 +146,97 @@ export default function ControlPanel() {
                 <ControlItem
                     name="Đèn"
                     iconSrc={lightIcon}
-                    isOn={lightOn}
-                    onToggle={() => setLightOn(!lightOn)}
+                    isOn={devices.light}
+                    onToggle={() => updateDeviceStatus('light', !devices.light)}
                 />
                 <ControlItem
                     name="Quạt"
                     iconSrc={fanIcon}
-                    isOn={fanOn}
-                    onToggle={handleToggleFan}
+                    isOn={devices.fan}
+                    onToggle={() => updateDeviceStatus('fan', !devices.fan)}
                 />
                 <ControlItem
                     name="Cửa chuồng"
                     iconSrc={doorIcon}
-                    isOn={doorOn}
-                    onToggle={() => setDoorOn(!doorOn)}
+                    isOn={devices.door}
+                    onToggle={() => updateDeviceStatus('door', !devices.door)}
                 />
                 <ControlItem
                     name="Trò chơi"
                     iconSrc={gameIcon}
-                    isOn={gameOn}
-                    onToggle={() => setGameOn(!gameOn)}
-                />
-                <ControlItem
-                    name="Thả chuồng"
-                    iconSrc={gameIcon}
-                    isOn={openClosure}
-                    onToggle={() => setOpenClosure(!openClosure)}
+                    isOn={devices.laser}
+                    onToggle={() => updateDeviceStatus('laser', !devices.laser)}
                 />
                 <ControlItem
                     name="Nước"
                     iconSrc={waterIcon}
-                    isOn={false}
-                    actionLabel="Thêm nước"
-                    onAction={() => alert('Đã thêm nước')}
+                    isOn={devices.refill_water}
                 />
                 <ControlItem
                     name="Thức ăn"
                     iconSrc={foodIcon}
-                    isOn={false}
-                    actionLabel="Thêm thức ăn"
-                    onAction={() => alert('Đã thêm thức ăn')}
+                    isOn={devices.refill_food}
                 />
             </div>
 
             <Dialog
                 open={scheduleModalOpen}
-                onClose={handleCloseScheduleModal}
-                sx={{ padding: '16px', borderRadius: '24px' }}
+                onClose={() => setScheduleModalOpen(false)}
             >
                 <DialogTitle>Đặt lịch kích hoạt</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Đèn"
-                                type="time"
-                                value={schedule.light}
-                                onChange={(e) =>
-                                    handleScheduleChange(
-                                        'light',
-                                        e.target.value,
-                                    )
-                                }
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                sx={{ marginTop: '8px' }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Quạt"
-                                type="time"
-                                value={schedule.fan}
-                                onChange={(e) =>
-                                    handleScheduleChange('fan', e.target.value)
-                                }
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Cửa chuồng"
-                                type="time"
-                                value={schedule.door}
-                                onChange={(e) =>
-                                    handleScheduleChange('door', e.target.value)
-                                }
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Trò chơi"
-                                type="time"
-                                value={schedule.game}
-                                onChange={(e) =>
-                                    handleScheduleChange('game', e.target.value)
-                                }
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                        </Grid>
+                        {Object.keys(devices).map((device) => (
+                            <Grid item xs={6} key={device}>
+                                <TextField
+                                    fullWidth
+                                    label={device}
+                                    type="time"
+                                    value={
+                                        schedule[device as keyof Devices]
+                                            ?.time || ''
+                                    }
+                                    onChange={(e) =>
+                                        handleScheduleChange(
+                                            device as keyof Devices,
+                                            'time',
+                                            e.target.value,
+                                        )
+                                    }
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                                {device !== 'refill_food' &&
+                                    device !== 'refill_water' && (
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    checked={
+                                                        schedule[
+                                                            device as keyof Devices
+                                                        ]?.status || false
+                                                    }
+                                                    onChange={(e) =>
+                                                        handleScheduleChange(
+                                                            device as keyof Devices,
+                                                            'status',
+                                                            e.target.checked,
+                                                        )
+                                                    }
+                                                />
+                                            }
+                                            label="Bật/Tắt"
+                                        />
+                                    )}
+                            </Grid>
+                        ))}
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseScheduleModal}>Hủy</Button>
+                    <Button onClick={() => setScheduleModalOpen(false)}>
+                        Hủy
+                    </Button>
                     <Button onClick={handleSaveSchedule} variant="contained">
                         Lưu
                     </Button>

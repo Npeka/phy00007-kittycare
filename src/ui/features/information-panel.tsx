@@ -1,16 +1,34 @@
+'use client';
 import Image from 'next/image';
+import { useContext, useEffect, useState } from 'react';
 import { Typography } from '@mui/material';
-import TitleSection from '@/ui/common/title-section';
-import MeasurementUnit from '@/ui/common/measurement-unit';
-import temperatureIcon from '@/public/home/temperature-icon.svg';
-import humidityIcon from '@/public/home/humidity-icon.svg';
-import myCat from '@/public/home/my-cat.jpg';
+import { cat, temperatureIcon, humidityIcon } from '@/public/home';
+import { MeasurementUnit, TitleSection } from '@/ui/common';
+import { AuthContext } from '@/context/auth-context';
+import { ref, onValue } from 'firebase/database';
+import { database } from '@/firebase/config';
+import { Environment } from '@/types/firebase';
 
 export default function InformationPanel() {
-    const date = '30/10/2024';
-    const time = '17:00';
-    const temperature = 36;
-    const humidity = 18;
+    const user = useContext(AuthContext);
+    const [env, setEnv] = useState<Environment>({
+        food: 0,
+        drink: 0,
+        temperature: 0,
+        humidity: 0,
+    });
+
+    useEffect(() => {
+        if (!user) return;
+        const envRef = ref(database, `${user.uid}/environment`);
+        onValue(envRef, (snapshot) => {
+            const data = snapshot.val();
+            setEnv(data);
+        });
+    }, [user]);
+
+    const date = new Date().toLocaleDateString('vi-VN');
+    const time = new Date().toLocaleTimeString('vi-VN');
 
     return (
         <div className="flex h-full flex-col gap-4 p-8">
@@ -35,7 +53,7 @@ export default function InformationPanel() {
                     alt="temperature-icon"
                 />
                 <Typography variant="h5">
-                    {temperature}
+                    {env.temperature}
                     <MeasurementUnit> °C</MeasurementUnit>
                 </Typography>
             </div>
@@ -47,16 +65,12 @@ export default function InformationPanel() {
                     alt="humidity-icon"
                 />
                 <Typography variant="h5">
-                    {humidity}
+                    {env.humidity}
                     <MeasurementUnit> %</MeasurementUnit>
                 </Typography>
             </div>
 
-            <Image
-                className="h-full grow rounded-2xl"
-                src={myCat}
-                alt="my-cat"
-            />
+            <Image className="h-full grow rounded-2xl" src={cat} alt="my-cat" />
         </div>
     );
 }
