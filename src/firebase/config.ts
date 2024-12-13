@@ -3,6 +3,8 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore/lite';
 import { getDatabase } from 'firebase/database';
 import { getMessaging } from 'firebase/messaging';
+import { FirebaseApp } from 'firebase/app';
+import { Messaging } from 'firebase/messaging';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,7 +21,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const database = getDatabase(app);
-// const messaging = getMessaging(app);
 
-export { auth, db, database };
+let messaging: Messaging | undefined;
+if (typeof window !== 'undefined') {
+    messaging = getMessaging(app);
+}
+
+export { auth, db, database, messaging };
 export default app;
