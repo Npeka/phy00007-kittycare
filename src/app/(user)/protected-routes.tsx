@@ -3,14 +3,14 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, createContext } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 
-export const UserContext = createContext<User | null>(null);
+export const UserContext = createContext<User>({} as User);
 
 export default function ProtectedRoutes({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<User>({} as User);
     const router = useRouter();
     const auth = getAuth();
 
