@@ -1,11 +1,15 @@
 import Image from 'next/image';
-import { Box, Typography, Button, Switch } from '@mui/material';
+import { Box, Typography, Switch } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import SendIcon from '@mui/icons-material/Send';
 
 interface ControlItemProps {
     name: string;
     iconSrc: string;
     isOn: boolean;
     onToggle?: () => void;
+    isAuto?: boolean | null;
+    onAutoToggle?: () => void;
     actionLabel?: string;
     onAction?: () => void;
 }
@@ -15,6 +19,8 @@ const ControlItem: React.FC<ControlItemProps> = ({
     iconSrc,
     isOn,
     onToggle,
+    isAuto,
+    onAutoToggle,
     actionLabel,
     onAction,
 }) => (
@@ -27,7 +33,28 @@ const ControlItem: React.FC<ControlItemProps> = ({
                 alignItems="center"
             >
                 <Typography variant="h6">{isOn ? 'Mở' : 'Tắt'}</Typography>
-                <Switch checked={isOn} onChange={onToggle} color="success" />
+                <Switch
+                    checked={isOn}
+                    onChange={onToggle}
+                    color="success"
+                    disabled={isAuto ?? false}
+                />
+            </Box>
+        )}
+
+        {isAuto !== null && (
+            <Box
+                sx={{ width: '100%' }}
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+            >
+                <Typography variant="h6">Tự động</Typography>
+                <Switch
+                    checked={isAuto}
+                    onChange={onAutoToggle}
+                    color="success"
+                />
             </Box>
         )}
 
@@ -40,17 +67,25 @@ const ControlItem: React.FC<ControlItemProps> = ({
         </Typography>
 
         {actionLabel && onAction && (
-            <Button
-                sx={{ margin: 'auto', textTransform: 'none' }}
-                variant="outlined"
-                onClick={onAction}
-                color="success"
+            <LoadingButton
+                sx={{
+                    margin: 'auto',
+                    textTransform: 'none',
+                }}
                 size="small"
+                variant="outlined"
+                color="success"
+                onClick={onAction}
+                loading={isOn}
+                loadingPosition="end"
+                endIcon={<SendIcon />}
             >
                 {actionLabel}
-            </Button>
+            </LoadingButton>
         )}
     </div>
 );
 
 export default ControlItem;
+
+// cooldown 30s
