@@ -1,23 +1,26 @@
+'use client'; 
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { Box, Paper, TextField, IconButton, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import chatIcon from '@/public/chatbot/chat-icon.png';
 import { useChat } from "ai/react";
+import { useContext } from 'react';
+import { AuthContext } from '@/context/auth-context';
 
 export default function Chatbot(): JSX.Element {
     const [isOpen, setIsOpen] = useState(false);
     // const [newMessage, setNewMessage] = useState<string>('');
     const chatContainerRef = useRef<HTMLDivElement>(null);
-    
+    const user = useContext(AuthContext);
+    const [userId, setUserId] = useState<string | null>(null);
 
     const toggleChat = () => {
         setIsOpen(!isOpen);
     };
 
     const {  messages, input, handleInputChange, handleSubmit } = useChat({
-        api: 'api/send-msg',
-     
+        api: `api/send-msg/${userId}`,
         onError: (e) => {
             console.log(e)
         }
@@ -48,6 +51,12 @@ export default function Chatbot(): JSX.Element {
                 chatContainerRef.current.scrollHeight;
         }
     });
+
+    useEffect(() => {
+        if (user) {
+            setUserId(user.uid);
+        }
+    }, [user]);
 
     return (
         <div className="fixed bottom-4 right-4 z-50">
