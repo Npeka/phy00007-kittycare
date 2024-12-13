@@ -1,18 +1,15 @@
 'use client';
 import { usePathname, useRouter } from 'next/navigation';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import {
     AppBar,
     Toolbar,
     Typography,
-    IconButton,
     Box,
-    Badge,
     Avatar,
     Button,
     Breadcrumbs,
 } from '@mui/material';
-import { Notifications } from '@mui/icons-material';
 import Cat from '@/public/sidebar/cat.svg';
 import links from './sidebar-link';
 import { AuthContext } from '@/context/auth-context';
@@ -22,6 +19,8 @@ export default function Header() {
     const router = useRouter();
     const breadcrumbs = links.find((link) => link.href === pathname);
     const user = useContext(AuthContext);
+
+    useEffect(() => {}, [user, user?.photoURL, router]);
 
     return (
         <AppBar
@@ -65,14 +64,8 @@ export default function Header() {
                             gap: '16px',
                         }}
                     >
-                        <IconButton color="inherit">
-                            <Badge color="error" badgeContent={100}>
-                                <Notifications fontSize="large" />
-                            </Badge>
-                        </IconButton>
                         <Typography variant="body1">
-                            Xin chào,{' '}
-                            {user.displayName?.split(' ').slice(-1)[0]}
+                            Xin chào, {user.displayName}
                         </Typography>
                         <Avatar
                             src={user.photoURL || Cat}

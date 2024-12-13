@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import {
     Box,
@@ -43,31 +42,30 @@ export default function CameraLive() {
                 })}
             </TitleSection>
 
-            <Box sx={{ mb: 2 }}>
+            <div className="flex items-center gap-4">
                 <TextField
+                    size="small"
                     label="Nhập IP Camera"
                     variant="outlined"
                     fullWidth
                     value={ipAddress}
                     onChange={handleIpChange}
-                    sx={{ mb: 2 }}
+                    sx={{ flex: 3 }}
                 />
                 <Button
                     variant="contained"
                     color="primary"
+                    size="small"
                     onClick={handleSubmit}
                     fullWidth
+                    sx={{ width: 'auto' }}
                 >
                     Xác nhận
                 </Button>
-            </Box>
+            </div>
 
             <Box sx={{ position: 'relative' }}>
-                {loading ? (
-                    <Typography variant="h6" sx={{ textAlign: 'center' }}>
-                        Đang tải...
-                    </Typography>
-                ) : (
+                {!loading && (
                     <Card sx={{ position: 'relative', borderRadius: 2 }}>
                         <CardMedia
                             className="aspect-video w-full rounded-2xl"
