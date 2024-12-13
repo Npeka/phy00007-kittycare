@@ -75,9 +75,7 @@ export default function SignUpPage() {
                 'Đăng ký thành công. Đang chuyển hướng...',
                 'success',
             );
-            setTimeout(() => {
-                router.push('/');
-            }, 3000);
+            router.push('/');
         } catch (error) {
             console.error('Đã xảy ra lỗi khi đăng ký:', error);
             showNotification(
