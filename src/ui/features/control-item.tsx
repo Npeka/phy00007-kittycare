@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Box, Typography, Switch } from '@mui/material';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { LoadingButton } from '@mui/lab';
 import SendIcon from '@mui/icons-material/Send';
 
 interface ControlItemProps {

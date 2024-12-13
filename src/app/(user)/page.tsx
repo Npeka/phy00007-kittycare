@@ -5,7 +5,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Drink, Food, Temperature, Humidity } from '@/ui/home/pet-environment';
 import { Calender, Chart } from '@/ui/home';
 import { AuthContext } from '@/context/auth-context';
-import { getDatabase, ref, get, child, push, onValue } from 'firebase/database';
+import { ref, onValue } from 'firebase/database';
 import { database } from '@/firebase/config';
 
 interface Environment {

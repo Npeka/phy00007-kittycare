@@ -174,3 +174,8 @@ export const Humidity = memo(({ humidity }: { humidity: number }) => {
         </HomeCard>
     );
 });
+
+Drink.displayName = 'Drink';
+Food.displayName = 'Food';
+Temperature.displayName = 'Temperature';
+Humidity.displayName = 'Humidity';

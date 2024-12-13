@@ -3,7 +3,6 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore/lite';
 import { getDatabase } from 'firebase/database';
 import { getMessaging } from 'firebase/messaging';
-import { FirebaseApp } from 'firebase/app';
 import { Messaging } from 'firebase/messaging';
 
 const firebaseConfig = {

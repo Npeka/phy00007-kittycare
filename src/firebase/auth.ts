@@ -1,12 +1,10 @@
 import './config';
 import {
     getAuth,
-    onAuthStateChanged,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
     updateProfile,
-    deleteUser,
 } from 'firebase/auth';
 import {
     getFirestore,
@@ -15,11 +13,10 @@ import {
     collection,
     addDoc,
 } from 'firebase/firestore';
-import { ref, onValue, update, set } from 'firebase/database';
+import { ref, set } from 'firebase/database';
 import { database } from '@/firebase/config';
 import { Data } from '@/types/firebase';
 
-// import { auth, db } from './config';
 import app from './config';
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -37,7 +34,7 @@ export const signUpUser = async (
         );
         const user = userCredential.user;
         await updateProfile(user, { displayName: fullname });
-        const [userDocRef, catDocRef] = await Promise.all([
+        const [_, catDocRef] = await Promise.all([
             setDoc(doc(db, 'users', user.uid), { email }),
             addDoc(collection(db, 'cats'), {
                 owner: user.uid,
@@ -74,8 +71,8 @@ export const signUpUser = async (
                 humidity: 0,
                 temperature: 0,
             },
-        }
-        set(ref(database, dataRef), nullObj);
+        };
+        await set(ref(database, dataRef), nullObj);
     } catch (error) {
         console.error(error);
         throw error;
@@ -84,12 +81,7 @@ export const signUpUser = async (
 
 export const signInUser = async (email: string, password: string) => {
     try {
-        const userCredential = await signInWithEmailAndPassword(
-            auth,
-            email,
-            password,
-        );
-        console.log(userCredential.user);
+        await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
         console.log(error);
         throw error;
