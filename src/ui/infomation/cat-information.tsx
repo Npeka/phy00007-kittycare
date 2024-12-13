@@ -36,14 +36,6 @@ export default function CatInformation() {
             />
 
             <TextField
-                label="Ngày sinh"
-                type="date"
-                variant="standard"
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-            />
-
-            <TextField
                 label="Cân nặng (kg)"
                 type="number"
                 variant="standard"

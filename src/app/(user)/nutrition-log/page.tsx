@@ -1,34 +1,42 @@
-// NutritionLog.tsx
 'use client';
 
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import './page.css';
+import { useEffect, useState } from 'react';
 
 export default function NutritionLog() {
-    const events = [
-        {
-            title: '200ml💧',
-            start: '2024-11-01',
-            color: '#b3e5fc',
-        },
-        {
-            title: '2.3g 🍖',
-            start: '2024-11-01',
-            color: '#ffcdd2',
-        },
-        {
-            title: '200ml 💧',
-            start: '2024-10-31',
-            color: '#b3e5fc',
-        },
-        {
-            title: '2.3g 🍖',
-            start: '2024-10-31',
-            color: '#ffcdd2',
-        },
-    ];
+    const [isFetch, setIsFetch] = useState(false);
+    const [events, setEvents] = useState<{ title: string; date: string; color: string }[]>([]);
+    
+    useEffect(() => {
+        console.log(isFetch);
+        if (isFetch) return;
+        
+        const fetchData = async () => {
+            const response = await fetch('api/get-health-logs');
+            const data = await response.json();
+            let newEvents = [];
+            for (let i = 0; i < data.length; i++) {
+                const drink = {
+                    title: `${data[i].drink}ml 💧`,
+                    date: data[i].time,
+                    color: '#b3e5fc',
+                }
+                const food = {
+                    title: `${data[i].food}g 🍖`,
+                    date: data[i].time,
+                    color: '#ffcdd2',
+                }
+                newEvents.push(drink);
+                newEvents.push(food);
+            }
+            setEvents(newEvents);
+        }
+        fetchData();
+        setIsFetch(true);
+    }, [events]);
 
     return (
         <div className="h-full bg-white">

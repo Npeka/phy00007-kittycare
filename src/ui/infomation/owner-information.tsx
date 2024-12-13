@@ -215,17 +215,6 @@ const UpdateInformation = () => {
                     onChange={handleInputChange}
                 />
 
-                <TextField
-                    label="Ngày sinh"
-                    name="birthdate"
-                    type="date"
-                    variant="standard"
-                    InputLabelProps={{ shrink: true }}
-                    value={user?.metadata.creationTime}
-                    fullWidth
-                    onChange={handleInputChange}
-                />
-
                 <LoadingButton
                     sx={{ marginLeft: 'auto' }}
                     variant="contained"
