@@ -1,3 +1,4 @@
+'use client';
 import Image from 'next/image';
 import { Card, CardContent, Typography } from '@mui/material';
 import {
@@ -122,7 +123,6 @@ export const Temperature = memo(({ temperature }: { temperature: number }) => {
 });
 
 export const Humidity = memo(({ humidity }: { humidity: number }) => {
-    console.log('rendering humidity');
     let humidityStatus;
     let statusColor;
 

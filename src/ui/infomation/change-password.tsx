@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { updateUserPassword } from '@/firebase/user';
 import { TextField, Box } from '@mui/material';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Notification from '@/ui/common/nofitication';
+import { LoadingButton } from '@mui/lab';
+import { useNotification } from '@/context/noti-context';
 import TitleSection from '@/ui/common/title-section';
 
 export default function ChangePassword() {
@@ -13,11 +13,7 @@ export default function ChangePassword() {
         newPassword: '',
         confirmPassword: '',
     });
-    const [noti, setNoti] = useState({
-        open: false,
-        message: '',
-        severity: 'success' as 'success' | 'error',
-    });
+    const [showNotification] = useNotification();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -58,75 +54,59 @@ export default function ChangePassword() {
         setLoading(true);
         try {
             await updateUserPassword(oldPassword.value, newPassword.value);
-            setNoti({
-                open: true,
-                message: 'Cập nhật mật khẩu thành công!',
-                severity: 'success',
-            });
+            showNotification('Cập nhật mật khẩu thành công', 'success');
         } catch (error) {
-            setNoti({
-                open: true,
-                message: 'Cập nhật mật khẩu thất bại. Vui lòng thử lại',
-                severity: 'error',
-            });
+            showNotification('Cập nhật mật khẩu thất bại', 'error');
             console.log(error);
         }
         setLoading(false);
     };
 
     return (
-        <>
-            <Notification
-                open={noti.open}
-                snackbarMessage={noti.message}
-                snackbarSeverity={noti.severity}
-                onClose={() => setNoti((prev) => ({ ...prev, open: false }))}
+        <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+        >
+            <TitleSection>Thay đổi mật khẩu</TitleSection>
+
+            <TextField
+                label="Mật khẩu cũ"
+                name="oldPassword"
+                type="password"
+                variant="standard"
+                fullWidth
             />
-            <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+
+            <TextField
+                label="Mật khẩu mới"
+                name="newPassword"
+                type="password"
+                variant="standard"
+                error={!!error.newPassword}
+                helperText={error.newPassword}
+                fullWidth
+            />
+
+            <TextField
+                label="Xác nhận mật khẩu mới"
+                name="confirmPassword"
+                type="password"
+                variant="standard"
+                error={!!error.confirmPassword}
+                helperText={error.confirmPassword}
+                fullWidth
+            />
+
+            <LoadingButton
+                sx={{ marginLeft: 'auto' }}
+                variant="contained"
+                color="primary"
+                type="submit"
+                loading={loading}
             >
-                <TitleSection>Thay đổi mật khẩu</TitleSection>
-
-                <TextField
-                    label="Mật khẩu cũ"
-                    name="oldPassword"
-                    type="password"
-                    variant="standard"
-                    fullWidth
-                />
-
-                <TextField
-                    label="Mật khẩu mới"
-                    name="newPassword"
-                    type="password"
-                    variant="standard"
-                    error={!!error.newPassword}
-                    helperText={error.newPassword}
-                    fullWidth
-                />
-
-                <TextField
-                    label="Xác nhận mật khẩu mới"
-                    name="confirmPassword"
-                    type="password"
-                    variant="standard"
-                    error={!!error.confirmPassword}
-                    helperText={error.confirmPassword}
-                    fullWidth
-                />
-
-                <LoadingButton
-                    sx={{ marginLeft: 'auto' }}
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    loading={loading}
-                >
-                    Cập nhật
-                </LoadingButton>
-            </Box>
-        </>
+                Cập nhật
+            </LoadingButton>
+        </Box>
     );
 }

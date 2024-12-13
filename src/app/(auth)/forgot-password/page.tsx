@@ -1,15 +1,19 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { TextField, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { FormLayout } from '@/ui/layout';
+import { useNotification } from '@/context/noti-context';
+import { sendUserPasswordResetEmail } from '@/firebase/user';
 
 export default function ForgotPasswordPage() {
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
+    const [showNotification] = useNotification();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -31,13 +35,19 @@ export default function ForgotPasswordPage() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!validateEmail()) return;
-
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            alert('Mã xác nhận đã được gửi đến email của bạn');
-            redirect('/reset-password');
-        }, 3000);
+        try {
+            await sendUserPasswordResetEmail(email);
+            showNotification(
+                'Một email đã được gửi đến bạn để khôi phục mật khẩu',
+                'success',
+            );
+            router.push('/sign-in');
+        } catch (error) {
+            console.error(error);
+            showNotification('Có lỗi xảy ra. Vui lòng thử lại sau', 'error');
+        }
+        setLoading(false);
     };
 
     return (

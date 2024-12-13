@@ -1,5 +1,5 @@
 import React from 'react';
-import Snackbar from '@mui/material/Snackbar';
+import { Snackbar } from '@mui/material';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
@@ -8,11 +8,17 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     },
 );
 
-interface NotificationProps {
+export interface NotificationProps {
     open: boolean;
     snackbarMessage: string;
-    snackbarSeverity: 'success' | 'error';
+    snackbarSeverity: 'success' | 'error' | 'info' | 'warning';
     onClose: () => void;
+}
+
+export interface NotificationContent {
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error' | 'info' | 'warning';
 }
 
 export default function Notification({

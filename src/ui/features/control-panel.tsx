@@ -25,6 +25,7 @@ import { AuthContext } from '@/context/auth-context';
 import { ref, onValue, update } from 'firebase/database';
 import { database } from '@/firebase/config';
 import { Devices, Auto } from '@/types/firebase';
+import { useNotification } from '@/context/noti-context';
 
 export default function ControlPanel() {
     const user = useContext(AuthContext);
@@ -143,6 +144,7 @@ export default function ControlPanel() {
 }
 
 const Schedule = ({ userId }: { userId: string }) => {
+    const [showNotification] = useNotification();
     const [schedule, setSchedule] = useState<
         Partial<Record<keyof Devices, { time: string; status?: boolean }>>
     >(() => {
@@ -256,6 +258,7 @@ const Schedule = ({ userId }: { userId: string }) => {
             }
         });
         setScheduleModalOpen(false);
+        showNotification('Đặt lịch thành công', 'success');
     }
 
     return (
@@ -288,6 +291,7 @@ const Schedule = ({ userId }: { userId: string }) => {
                                         devicesLabel[device as keyof Devices]
                                     }
                                     type="time"
+                                    color="success"
                                     value={
                                         schedule[device as keyof Devices]
                                             ?.time || ''

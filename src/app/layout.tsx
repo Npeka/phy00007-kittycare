@@ -1,7 +1,6 @@
-import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import { ThemeProvider } from '@mui/material';
-import theme from './theme';
+import type { Metadata } from 'next';
+import { KittyCareTheme } from './theme';
 import './globals.css';
 
 const geistSans = localFont({
@@ -21,8 +20,6 @@ export const metadata: Metadata = {
     description: 'KittyCare is a web IOT project for taking care of your cat.',
 };
 
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -33,9 +30,7 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <AppRouterCacheProvider>
-                    <ThemeProvider theme={theme}>{children}</ThemeProvider>
-                </AppRouterCacheProvider>
+                <KittyCareTheme>{children}</KittyCareTheme>
             </body>
         </html>
     );

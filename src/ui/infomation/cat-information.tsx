@@ -3,19 +3,26 @@
 import { useState } from 'react';
 import { TextField, Box } from '@mui/material';
 import { TitleSection } from '@/ui/common';
+import { useNotification } from '@/context/noti-context';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 export default function CatInformation() {
     const [loading, setLoading] = useState(false);
-
+    const [showNotification] = useNotification();
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setLoading(true);
-
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            showNotification(
+                'Cập nhật thông tin của mèo thành công!',
+                'success',
+            );
+        } catch (error) {
+            showNotification('Cập nhật thông tin của mèo thất bại!', 'error');
+            console.log(error);
+        }
         setLoading(false);
-        alert('Cập nhật thông tin chủ nuôi thành công!');
     };
 
     return (

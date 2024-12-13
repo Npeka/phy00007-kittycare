@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { redirect } from 'next/navigation';
 import {
     InputAdornment,
     Checkbox,
@@ -14,20 +14,27 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { FormLayout } from '@/ui/layout';
 import { signUpUser } from '@/firebase/auth';
+import { useNotification } from '@/context/noti-context';
+
+interface SignUpFormValues {
+    fullname: string;
+    email: string;
+    password: string;
+}
+
+const iniState: SignUpFormValues = {
+    fullname: '',
+    email: '',
+    password: '',
+};
 
 export default function SignUpPage() {
-    const [loading, setLoading] = useState(false);
-    const [formValues, setFormValues] = useState({
-        fullname: '',
-        email: '',
-        password: '',
-    });
-    const [errors, setErrors] = useState({
-        fullname: '',
-        email: '',
-        password: '',
-    });
-    const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [formValues, setFormValues] = useState<SignUpFormValues>(iniState);
+    const [errors, setErrors] = useState<SignUpFormValues>(iniState);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [showNotification] = useNotification();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -64,9 +71,19 @@ export default function SignUpPage() {
                 formValues.email,
                 formValues.password,
             );
-            redirect('/');
+            showNotification(
+                'Đăng ký thành công. Đang chuyển hướng...',
+                'success',
+            );
+            setTimeout(() => {
+                router.push('/');
+            }, 3000);
         } catch (error) {
-            console.error(error);
+            console.error('Đã xảy ra lỗi khi đăng ký:', error);
+            showNotification(
+                'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin',
+                'error',
+            );
         }
         setLoading(false);
     };
