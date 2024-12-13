@@ -1,6 +1,9 @@
 'use client';
 
-import { createTheme } from '@mui/material';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { ThemeProvider, createTheme } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { NotificationProvider } from '@/context/noti-context';
 
 const theme = createTheme({
     palette: {
@@ -33,4 +36,13 @@ const theme = createTheme({
     },
 });
 
-export default theme;
+export const KittyCareTheme = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <AppRouterCacheProvider options={{ key: 'css' }}>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <NotificationProvider>{children}</NotificationProvider>
+            </ThemeProvider>
+        </AppRouterCacheProvider>
+    );
+};
