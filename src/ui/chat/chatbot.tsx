@@ -10,7 +10,6 @@ import { AuthContext } from '@/context/auth-context';
 
 export default function Chatbot(): JSX.Element {
     const [isOpen, setIsOpen] = useState(false);
-    // const [newMessage, setNewMessage] = useState<string>('');
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const user = useContext(AuthContext);
     const [userId, setUserId] = useState<string | null>(null);
@@ -26,24 +25,6 @@ export default function Chatbot(): JSX.Element {
         }
         
     });
-
-    /*
-    const handleSendMessage = () => {
-        if (newMessage.trim()) {
-            setMessages((prev) => [
-                ...prev,
-                { text: newMessage.trim(), sender: 'user' },
-            ]);
-            setNewMessage('');
-            
-            const responseText = response;
-            setMessages((prev) => [
-                ...prev,
-                { text: responseText, sender: 'bot' },
-            ]);
-        }
-    };
-    */
 
     useEffect(() => {
         if (chatContainerRef.current) {
@@ -101,7 +82,7 @@ export default function Chatbot(): JSX.Element {
                 >
                     {/* Header */}
                     <Box className="mb-2 text-lg font-semibold">
-                        Chat with us
+                        Trợ lý ảo KittyCare
                     </Box>
 
                     {/* Chat content */}
@@ -136,7 +117,7 @@ export default function Chatbot(): JSX.Element {
                             ))
                         ) : (
                             <p className="text-sm text-gray-400">
-                                No messages yet.
+                                Hãy bắt đầu cuộc trò chuyện!
                             </p>
                         )}
                     </Box>
@@ -144,7 +125,7 @@ export default function Chatbot(): JSX.Element {
                     {/* Input and send button */}
                     <Box className="mt-2 flex items-center gap-2">
                         <TextField
-                            placeholder="Type your message..."
+                            placeholder="Nhập tin nhắn..."
                             fullWidth
                             variant="outlined"
                             size="small"
