@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
         const querySnapshot = await getDocs(collection(db, 'health'));
         const data = querySnapshot.docs.map(doc => doc.data()); 
         data.forEach((doc) => {
-            let date : string = doc.time.toDate().toLocaleTimeString('vi-VN', {  day: 'numeric', month: 'numeric', year: 'numeric'});
+            let date : string = doc.date.toDate().toLocaleTimeString('vi-VN', {  day: 'numeric', month: 'numeric', year: 'numeric'});
             date = date.split(' ')[1].replaceAll('/', '-');
             
             let [day, month, year] = date.split('-');
