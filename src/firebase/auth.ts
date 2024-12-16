@@ -10,6 +10,7 @@ import {
     getFirestore,
     doc,
     setDoc,
+    updateDoc,
     collection,
     addDoc,
 } from 'firebase/firestore';
@@ -32,23 +33,23 @@ export const signUpUser = async (
             email,
             password,
         );
+
         const user = userCredential.user;
         await updateProfile(user, { displayName: fullname });
+
+        const userDocRef = doc(db, 'users', user.uid);
         const [_, catDocRef] = await Promise.all([
-            setDoc(doc(db, 'users', user.uid), { email }),
+            setDoc(userDocRef, { email }),
             addDoc(collection(db, 'cats'), {
-                owner: user.uid,
+                owner: userDocRef,
                 name: null,
                 age: null,
                 height: null,
                 weight: null,
             }),
         ]);
-        await setDoc(
-            doc(db, 'users', user.uid),
-            { cat: `/cats/${catDocRef.id}` },
-            { merge: true },
-        );
+
+        await updateDoc(userDocRef, { cat: catDocRef });
 
         const dataRef = user.uid;
         const nullObj: Data = {
@@ -72,6 +73,7 @@ export const signUpUser = async (
                 temperature: 0,
             },
         };
+
         await set(ref(database, dataRef), nullObj);
     } catch (error) {
         console.error(error);

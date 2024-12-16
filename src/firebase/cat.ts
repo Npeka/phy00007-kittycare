@@ -20,9 +20,11 @@ export const getCatInformation = async (): Promise<Cat | any> => {
         }
 
         const catsDocs = await getDocs(collection(db, 'cats'));
-        const userCats = catsDocs.docs.filter(
-            (catDoc) => catDoc.data()?.owner === user.uid,
-        );
+
+        const userCats = catsDocs.docs.filter((catDoc) => {
+            const ownerId = catDoc.data().owner.id;
+            return ownerId === user.uid;
+        });
 
         if (userCats.length === 0) {
             console.error('No cats found for the user');
@@ -53,9 +55,10 @@ export const updateCatInformation = async ({
         }
 
         const catsDocs = await getDocs(collection(db, 'cats'));
-        const userCats = catsDocs.docs.filter(
-            (catDoc) => catDoc.data()?.owner === user.uid,
-        );
+        const userCats = catsDocs.docs.filter((catDoc) => {
+            const ownerId = catDoc.data().owner.id;
+            return ownerId === user.uid;
+        });
 
         if (userCats.length === 0) {
             console.error('No cats found for the user');

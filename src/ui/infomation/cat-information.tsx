@@ -32,9 +32,9 @@ export default function CatInformation() {
             if (catInfo) {
                 setFormValues({
                     name: catInfo.name,
-                    age: String(catInfo.age),
-                    weight: String(catInfo.weight),
-                    height: String(catInfo.height),
+                    age: catInfo.age,
+                    weight: catInfo.weight,
+                    height: catInfo.height,
                 });
             }
             setLoading(false);
@@ -51,9 +51,9 @@ export default function CatInformation() {
     const validateForm = () => {
         const newErrors = {
             name:
-                formValues.name.length >= 6
+                formValues.name.length >= 1
                     ? ''
-                    : 'Tên mèo phải có ít nhất 6 ký tự',
+                    : 'Tên mèo phải có ít nhất 1 ký tự',
             age: formValues.age ? '' : 'Tuổi không được để trống',
             weight: formValues.weight ? '' : 'Cân nặng không được để trống',
             height: formValues.height ? '' : 'Chiều cao không được để trống',
