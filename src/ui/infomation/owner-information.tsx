@@ -19,35 +19,34 @@ export default function OwnerInformation() {
 }
 
 const UpdateAvatar = () => {
-    const [loadingAvatar, setLoadingAvatar] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [avatar, setAvatar] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [showNotification] = useNotification();
     const user = useContext(AuthContext);
 
     useEffect(() => {
-        if (user && user.photoURL) {
+        if (user?.photoURL) {
             setAvatarPreview(user.photoURL);
         }
-    }, [user]);
+    }, [user, user?.photoURL]);
 
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            setLoadingAvatar(true);
+            setLoading(true);
             setAvatar(file);
-            const previewUrl = URL.createObjectURL(file);
-            setAvatarPreview(previewUrl);
-            setLoadingAvatar(false);
+            setAvatarPreview(URL.createObjectURL(file));
+            setLoading(false);
         }
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        setLoadingAvatar(true);
-        if (avatarPreview === null) {
+        setLoading(true);
+        if (!avatarPreview) {
             showNotification('Vui lòng chọn ảnh đại diện!', 'error');
-            setLoadingAvatar(false);
+            setLoading(false);
             return;
         }
         try {
@@ -56,9 +55,9 @@ const UpdateAvatar = () => {
             showNotification('Cập nhật ảnh đại diện thành công!', 'success');
         } catch (error) {
             showNotification('Cập nhật ảnh đại diện thất bại!', 'error');
-            console.log(error);
+            console.error(error);
         }
-        setLoadingAvatar(false);
+        setLoading(false);
     };
 
     return (
@@ -78,11 +77,10 @@ const UpdateAvatar = () => {
             ) : (
                 <Skeleton variant="circular" width={80} height={80} />
             )}
-
             <LoadingButton
                 variant="contained"
                 color="primary"
-                loading={loadingAvatar}
+                loading={loading}
                 component="label"
             >
                 Chọn ảnh đại diện
@@ -97,7 +95,7 @@ const UpdateAvatar = () => {
                 type="submit"
                 variant="outlined"
                 color="success"
-                disabled={loadingAvatar || !avatar}
+                disabled={loading || !avatar}
             >
                 Cập nhật
             </LoadingButton>
@@ -106,17 +104,17 @@ const UpdateAvatar = () => {
 };
 
 const UpdateInformation = () => {
+    const user = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [showNotification] = useNotification();
-    const [infomation, setInfomation] = useState({
+    const [information, setInformation] = useState({
         fullname: '' as string | null,
         email: '' as string | null,
     });
 
-    const user = useContext(AuthContext);
     useEffect(() => {
         if (user) {
-            setInfomation({
+            setInformation({
                 fullname: user.displayName,
                 email: user.email,
             });
@@ -125,7 +123,7 @@ const UpdateInformation = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setInfomation((prev) => ({ ...prev, [name]: value }));
+        setInformation((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -133,13 +131,13 @@ const UpdateInformation = () => {
         setLoading(true);
         try {
             await updateUserProfile(
-                infomation.fullname || '',
-                infomation.email || '',
+                information.fullname || '',
+                information.email || '',
             );
             showNotification('Cập nhật thông tin thành công!', 'success');
         } catch (error) {
             showNotification('Cập nhật thông tin thất bại!', 'error');
-            console.log(error);
+            console.error(error);
         }
         setLoading(false);
     };
@@ -156,28 +154,22 @@ const UpdateInformation = () => {
                         label="Họ và tên"
                         name="fullname"
                         variant="standard"
-                        value={infomation.fullname}
-                        InputLabelProps={{
-                            shrink: infomation.fullname ? true : false,
-                        }}
+                        value={information.fullname}
+                        InputLabelProps={{ shrink: !!information.fullname }}
                         fullWidth
                         onChange={handleInputChange}
                     />
-
                     <TextField
                         label="Email"
                         name="email"
                         type="email"
                         variant="standard"
-                        value={infomation.email}
-                        InputLabelProps={{
-                            shrink: infomation.email ? true : false,
-                        }}
+                        value={information.email}
+                        InputLabelProps={{ shrink: !!information.email }}
                         required
                         fullWidth
                         onChange={handleInputChange}
                     />
-
                     <LoadingButton
                         sx={{ marginLeft: 'auto' }}
                         variant="contained"
