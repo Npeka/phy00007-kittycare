@@ -14,6 +14,9 @@ const theme = createTheme({
             default: '#DAEBCE',
         },
     },
+    typography: {
+        fontFamily: ['Roboto Flex', 'sans-serif'].join(','),
+    },
     components: {
         MuiButton: {
             styleOverrides: {

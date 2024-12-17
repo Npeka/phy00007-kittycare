@@ -64,7 +64,7 @@ export default function Header() {
                             gap: '16px',
                         }}
                     >
-                        <Typography variant="body1">
+                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                             Xin chào, {user.displayName}
                         </Typography>
                         <Avatar

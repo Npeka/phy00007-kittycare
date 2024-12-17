@@ -17,6 +17,8 @@ const config: Config = {
                 mouse: ['Mouse Memoirs', 'sans-serif'],
                 poppins: ['Poppins', 'sans-serif'],
                 quicksand: ['Quicksand', 'sans-serif'],
+                robotoflex: ['Roboto Flex', 'sans-serif'],
+                montserrat: ['Montserrat', 'sans-serif'],
             },
         },
     },
