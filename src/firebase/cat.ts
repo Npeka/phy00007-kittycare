@@ -76,3 +76,59 @@ export const updateCatInformation = async ({
         return error;
     }
 };
+
+export const getHealthLogsSorted = async (): Promise<number[][]> => {
+    try {
+        const response = await fetch('api/get-health-logs');
+        const data = await response.json();
+
+        const sortedData = data
+            .sort((a: any, b: any) => {
+                return new Date(a.time).getTime() - new Date(b.time).getTime();
+            })
+            .slice(-7);
+
+        let foodData = [0, 0, 0, 0, 0, 0, 0];
+        let drinkData = [0, 0, 0, 0, 0, 0, 0];
+
+        sortedData.forEach((item: any) => {
+            const date = new Date(item.time);
+            const day = date.getDay() != 0 ? date.getDay() - 1 : 6;
+            foodData[day] += item.food;
+            drinkData[day] += item.drink;
+        });
+
+        return [foodData, drinkData];
+    } catch (error) {
+        console.error('Error getting health logs:', error);
+        return [[], []];
+    }
+};
+
+export const getEnvironmentLogsSorted = async (): Promise<number[][]> => {
+    try {
+        const response = await fetch('api/get-env-logs');
+        const data = await response.json();
+
+        const sortedData = data
+            .sort((a: any, b: any) => {
+                return new Date(a.time).getTime() - new Date(b.time).getTime();
+            })
+            .slice(-7);
+
+        let tempData = [0, 0, 0, 0, 0, 0, 0];
+        let humidData = [0, 0, 0, 0, 0, 0, 0];
+
+        sortedData.forEach((item: any) => {
+            const date = new Date(item.time);
+            const day = date.getDay() != 0 ? date.getDay() - 1 : 6;
+            tempData[day] += item.temp;
+            humidData[day] += item.humid;
+        });
+
+        return [tempData, humidData];
+    } catch (error) {
+        console.error('Error getting environment logs:', error);
+        return [[], []];
+    }
+};
