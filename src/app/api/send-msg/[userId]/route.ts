@@ -7,9 +7,13 @@ import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { HttpResponseOutputParser } from 'langchain/output_parsers';
 import { NextRequest, NextResponse } from 'next/server';
+import app from '../../../../firebase/config';
+const jsonHeader = { headers: { 'Content-Type': 'application/json' } };
 export const dynamic = 'force-dynamic'
-import { db } from '@/firebase/admin';
 import { Environment } from '@/types/firebase';
+import { collection, doc, getDocs, getFirestore, query, where } from 'firebase/firestore';
+const dtb = getFirestore(app);
+import { db } from '@/firebase/admin'; 
 /**
  * Basic memory formatter that stringifies and passes
  * message history directly into the model.
@@ -19,6 +23,7 @@ const formatMessage = (message: VercelChatMessage) => {
     return `${message.role}: ${message.content}`;
 };
 
+
 const TEMPLATE = `KittyCare là một ứng dụng IoT chăm sóc thú cưng (mèo) thông qua việc lưu trữ thông tin môi trường như nhiệt độ, độ ẩm, ánh sáng, tình trạng cửa chuồng, lượng thức ăn, nước uống nhằm đưa ra những lời khuyên và nhận xét hữu ích cho sức khỏe của thú cưng. Bạn chính là chatbot được tích hợp vào Kittycare, giúp hướng dẫn sử dụng trang web và tương tác với người dùng. Bạn có thể được hỏi về bất kỳ vấn đề nào liên quan đến tình trạng thú cưng và các chức năng trên trang. Trả lời bằng Tiếng Việt. Nếu không biết câu trả lời, hãy trả lời không biết, giữ câu trả lời trong vòng 10 câu và câu trả lời phải chính xác. Đừng sử dụng cú pháp Markdown. Nếu câu trả lời là dạng liệt kê, hãy xuống dòng mỗi lần liệt kê. Không sử dụng từ 'nó' khi nhắc đến ứng dụng Kittycare.
 
 Current conversation:
@@ -26,6 +31,9 @@ Current conversation:
 
 Current environment:
 {environment}
+
+Current cat information:
+{cat_info}
 
 user: {input}
 assistant:`;
@@ -56,6 +64,20 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
             });
         };
 
+        /* cat information */
+        const catInfo = query(
+            collection(dtb, 'cats'), // Reference to 'cats' collection
+            where('owner', '==', doc(dtb, 'users', userId))
+        );
+        const queryCatInfo = await getDocs(catInfo);
+        const cat = queryCatInfo.docs.map(doc => {
+            const { name, age, height, weight } = doc.data();
+            return { name, age, height, weight };
+        });
+
+        const formattedCatInfo: string=`Tên thú cưng: ${cat[0].name}, Tuổi: ${cat[0].age}, Chiều cao: ${cat[0].height} cm, Cân nặng: ${cat[0].weight} kg \n`;
+        
+
         const data : Environment = await getDataFromFirebase();
         const environment: string = 'Temperature: ' + String(data.temperature) + '°C, Humidity: ' + String(data.humidity) + '% \n';
         const prompt = PromptTemplate.fromTemplate(TEMPLATE);
@@ -74,6 +96,7 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
         const stream = await chain.stream({
             chat_history: formattedPreviousMessages.join('\n'),
             environment: environment, 
+            cat_info: formattedCatInfo,
             input: currentMessageContent,
         });
 

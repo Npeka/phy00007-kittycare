@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Card, CardContent } from '@mui/material';
 import { Bar } from 'react-chartjs-2';
 import {
@@ -15,6 +15,7 @@ import {
     ScaleOptionsByType,
 } from 'chart.js';
 import { getHealthLogsSorted } from '@/firebase/cat';
+import { AuthContext } from '@/context/auth-context';
 
 ChartJS.register(
     CategoryScale,
@@ -29,15 +30,19 @@ ChartJS.register(
 export default function Chart() {
     const [dataFood, setDataFood] = useState<number[]>([]);
     const [dataDrink, setDataDrink] = useState<number[]>([]);
+    const user = useContext(AuthContext);
 
     useEffect(() => {
+        if (!user) return;
         const fetchData = async () => {
-            const [foodData, drinkData] = await getHealthLogsSorted();
-            setDataFood(foodData);
-            setDataDrink(drinkData);
+            const data = await Promise.all([
+                getHealthLogsSorted(user.uid),
+            ]);
+            setDataFood(data[0][0]);
+            setDataDrink(data[0][1]);
         };
         fetchData();
-    }, []);
+    }, [user]);
 
     const data = {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
