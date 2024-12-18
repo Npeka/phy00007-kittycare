@@ -77,9 +77,9 @@ export const updateCatInformation = async ({
     }
 };
 
-export const getHealthLogsSorted = async (): Promise<number[][]> => {
+export const getHealthLogsSorted = async (userId: string): Promise<number[][]> => {
     try {
-        const response = await fetch('api/get-health-logs');
+        const response = await fetch(`api/get-health-logs/${userId}`);
         const data = await response.json();
 
         const sortedData = data
@@ -105,9 +105,9 @@ export const getHealthLogsSorted = async (): Promise<number[][]> => {
     }
 };
 
-export const getEnvironmentLogsSorted = async (): Promise<number[][]> => {
+export const getEnvironmentLogsSorted = async (userId: string): Promise<number[][]> => {
     try {
-        const response = await fetch('api/get-env-logs');
+        const response = await fetch(`api/get-env-logs/${userId}`);
         const data = await response.json();
 
         const sortedData = data

@@ -12,17 +12,17 @@ import { getHealthLogsSorted, getEnvironmentLogsSorted } from '@/firebase/cat';
 import { Card, CardContent } from '@mui/material';
 
 export default function HealthPredictionPage() {
-    const user = useContext(AuthContext);
     const [analysis, setAnalysis] = useState(null);
-
+    const user = useContext(AuthContext);
     const [dataFD, setDataFD] = useState<number[][]>([[], []]);
     const [dataTH, setDataTH] = useState<number[][]>([[], []]);
 
     useEffect(() => {
+        if (!user) return;
         const getData = async () => {
             const data = await Promise.all([
-                getHealthLogsSorted(),
-                getEnvironmentLogsSorted(),
+                getHealthLogsSorted(user.uid),
+                getEnvironmentLogsSorted(user.uid),
             ]);
 
             setDataFD(data[0]);
@@ -33,11 +33,11 @@ export default function HealthPredictionPage() {
             if (!user) return;
             const res = await fetch(`/api/get-analysis/${user?.uid}`);
             const data = await res.json();
-            setAnalysis(data.data);
+            setAnalysis(data);
         };
 
         getData();
-        // getAnalysis();
+        getAnalysis();
     }, [user]);
 
     return (
@@ -93,22 +93,7 @@ export default function HealthPredictionPage() {
             </div>
 
             <Typography variant="h6" sx={{ fontWeight: '400' }}>
-                Dựa trên thông tin sức khỏe và sinh hoạt của Bé mèo nhỏ mít
-                trong 7 ngày qua, có thể thấy một số điều cần lưu ý. Nhiệt độ
-                môi trường dao động từ 27°C đến 33°C, trong khi độ ẩm cũng thay
-                đổi từ 56% đến 78%. Nhiệt độ có xu hướng tăng cao vào những ngày
-                cuối, có thể gây ra cảm giác khó chịu cho thú cưng. Về chế độ
-                dinh dưỡng, lượng thức ăn và nước uống có sự biến động. Trong
-                ngày 13-12, Bé mèo nhỏ mít đã tiêu thụ một lượng thức ăn khá lớn
-                là 200 g, nhưng vào ngày 15-12, lượng thức ăn chỉ còn 45 g, đây
-                là mức khá thấp. Lượng nước uống cũng giảm đáng kể trong những
-                ngày gần đây, đặc biệt là vào ngày 15-12. Lời khuyên cho chủ
-                nuôi là cần theo dõi sát sao lượng thức ăn và nước uống của Bé
-                mèo nhỏ mít để đảm bảo thú cưng luôn được cung cấp đủ dinh dưỡng
-                và nước. Nếu thấy thú cưng có dấu hiệu chán ăn hoặc không uống
-                đủ nước, nên đưa đi khám bác sĩ thú y. Ngoài ra, trong những
-                ngày có nhiệt độ cao, cần tạo môi trường thoáng mát và cung cấp
-                đủ nước để Bé mèo nhỏ mít không bị mất nước.
+                {analysis}
             </Typography>
         </div>
     );

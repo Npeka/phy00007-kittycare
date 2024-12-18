@@ -4,20 +4,22 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import './page.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '@/context/auth-context';
 
 export default function NutritionLog() {
     const [isFetch, setIsFetch] = useState(false);
     const [events, setEvents] = useState<{ title: string; date: string; color: string }[]>([]);
-    
+    const user = useContext(AuthContext);
+
     useEffect(() => {
-        console.log(isFetch);
+        if (!user) return;
         if (isFetch) return;
         
         const fetchData = async () => {
-            const response = await fetch('api/get-health-logs');
+            const response = await fetch(`api/get-health-logs/${user.uid}`);
             const data = await response.json();
-            let newEvents = [];
+            const newEvents = [];
             for (let i = 0; i < data.length; i++) {
                 const drink = {
                     title: `${data[i].drink}ml 💧`,
@@ -36,7 +38,7 @@ export default function NutritionLog() {
         }
         fetchData();
         setIsFetch(true);
-    }, [events]);
+    }, [user]);
 
     return (
         <div className="h-full bg-white">
