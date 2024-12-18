@@ -7,6 +7,7 @@ import videoIcon from '@/public/pet-monitoring/video.svg';
 import TitleSection from '@/ui/common/title-section';
 
 export default function DataStorageHistory() {
+    /*
     const data = [
         {
             video: 'https://example.com/video1',
@@ -72,6 +73,7 @@ export default function DataStorageHistory() {
             </div>
         </>
     );
+    */
 }
 
 const CardItem = ({
