@@ -83,7 +83,7 @@ export const Food = memo(({ value }: { value: number }) => {
                     <CardTitle>Tổng lượng thức ăn</CardTitle>
                     <div className="flex items-center justify-between">
                         <MeasurementUnit>{date}</MeasurementUnit>
-                        <MeasurementUnit>{value}mg</MeasurementUnit>
+                        <MeasurementUnit>{Math.round(value)}g</MeasurementUnit>
                     </div>
                 </CardContent>
                 <Image

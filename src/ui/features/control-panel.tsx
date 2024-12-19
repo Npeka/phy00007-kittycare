@@ -134,27 +134,19 @@ export default function ControlPanel() {
                 <ControlItem
                     name="Thả chuồng"
                     iconSrc={protectIcon}
-                    isOn={devices.protect}
-                    onToggle={() =>
-                        updateDeviceStatus('protect', !devices.protect)
-                    }
-                    isAuto={auto.protect}
-                    onAutoToggle={() =>
-                        updateAutoStatus('protect', !auto.protect)
-                    }
+                    isOn={!auto.protect}
+                    onToggle={() => updateAutoStatus('protect', !auto.protect)}
                 />
                 <ControlItem
                     name="Trò chơi"
                     iconSrc={gameIcon}
                     isOn={devices.laser}
                     onToggle={() => updateDeviceStatus('laser', !devices.laser)}
-                    isAuto={null}
                 />
                 <ControlItem
                     name="Nước"
                     iconSrc={waterIcon}
                     isOn={devices.refill_water}
-                    isAuto={null}
                     actionLabel="Refill nước"
                     onAction={() => updateDeviceStatus('refill_water', true)}
                 />
@@ -162,7 +154,6 @@ export default function ControlPanel() {
                     name="Thức ăn"
                     iconSrc={foodIcon}
                     isOn={devices.refill_food}
-                    isAuto={null}
                     actionLabel="Refill thức ăn"
                     onAction={() => updateDeviceStatus('refill_food', true)}
                 />

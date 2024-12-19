@@ -21,7 +21,7 @@ const ControlItem: React.FC<ControlItemProps> = ({
     iconSrc,
     isOn,
     onToggle,
-    isAuto,
+    isAuto = null,
     onAutoToggle,
     actionLabel,
     onAction,
@@ -37,27 +37,33 @@ const ControlItem: React.FC<ControlItemProps> = ({
             onAutoToggle(!isAuto); // Toggle the auto state
             setIsLoading(true);
             try {
-                const response = await fetch(`http://localhost:3000/api/send-email/${user.uid}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        subject: `Thông báo từ KittyCare - ứng dụng chăm sóc thú cưng`,
-                        text: `${name} đang được ${!isAuto ? 'Bật' : 'Tắt'} trong chế độ Tự động!`,
-                    }),  
-                });
+                const response = await fetch(
+                    `http://localhost:3000/api/send-email/${user.uid}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            subject: `Thông báo từ KittyCare - ứng dụng chăm sóc thú cưng`,
+                            text: `${name} đang được ${!isAuto ? 'Bật' : 'Tắt'} trong chế độ Tự động!`,
+                        }),
+                    },
+                );
 
                 if (!response.ok) {
                     throw new Error('Failed to send email');
                 }
 
-                const mobileResponse = await fetch(`http://localhost:3000/api/notification`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title: 'KittyCare Notification',
-                        body: `${name} ${!isAuto ? 'ĐANG TRONG' : 'THOÁT KHỎI'} chế độ Tự động!`,
-                    }),
-                });
+                const mobileResponse = await fetch(
+                    `http://localhost:3000/api/notification`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: 'KittyCare Notification',
+                            body: `${name} ${!isAuto ? 'ĐANG TRONG' : 'THOÁT KHỎI'} chế độ Tự động!`,
+                        }),
+                    },
+                );
 
                 if (!mobileResponse.ok) {
                     throw new Error('Failed to send notification');
@@ -67,7 +73,7 @@ const ControlItem: React.FC<ControlItemProps> = ({
                 console.error('Error sending email:', error);
             } finally {
                 setIsLoading(false);
-            } 
+            }
         }
     };
 
@@ -108,7 +114,12 @@ const ControlItem: React.FC<ControlItemProps> = ({
             )}
 
             <div className="m-auto aspect-square w-[72px] rounded-full bg-[#DAEBCE] p-5">
-                <Image src={iconSrc} alt={`${name} icon`} width={50} height={50} />
+                <Image
+                    src={iconSrc}
+                    alt={`${name} icon`}
+                    width={50}
+                    height={50}
+                />
             </div>
 
             <Typography align="center" variant="h6">
