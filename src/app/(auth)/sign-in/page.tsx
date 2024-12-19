@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     Typography,
@@ -35,7 +35,7 @@ export default function SignInPage() {
         try {
             await signInUser(formValues.email, formValues.password);
             showNotification('Đăng nhập thành công', 'success');
-            router.push('/');
+            router.push('/');    
         } catch (error) {
             console.error(error);
             showNotification('Đã xảy ra lỗi khi đăng nhập', 'error');
