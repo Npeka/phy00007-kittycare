@@ -16,13 +16,14 @@ void RefillWater::init() {
   pinMode(relayPin, OUTPUT);
   pinMode(sensorPin, INPUT);
   pinMode(powerPin, OUTPUT);
+  digitalWrite(relayPin, LOW);
 }
 
 void RefillWater::readVolume() {
   digitalWrite(powerPin, HIGH);
-  delay(1000);
+  delay(2000);
   uint16_t currentVolume = analogRead(sensorPin);
-  volume = map(currentVolume, 0, 1800, 0, volumeThreshold);
+  volume = map(currentVolume, 0, 1250, 0, volumeThreshold);
   digitalWrite(powerPin, LOW);
 }
 
@@ -30,8 +31,7 @@ float RefillWater::getVolume() const {
   return volume;
 }
 
-void RefillWater::
-    sum(const uint16_t &ml) {
+void RefillWater::sum(const uint16_t &ml) {
   sumMl += ml;
 }
 
@@ -52,12 +52,12 @@ bool RefillWater::isHigh() const {
 }
 
 void RefillWater::on() {
-  digitalWrite(relayPin, HIGH);
+  digitalWrite(relayPin, LOW);
   status = true;
 }
 
 void RefillWater::off() {
-  digitalWrite(relayPin, LOW);
+  digitalWrite(relayPin, HIGH);
   status = false;
 }
 

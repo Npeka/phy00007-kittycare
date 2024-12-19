@@ -1,7 +1,7 @@
 // Wi-Fi
 #include <WiFi.h>
-const char *ssid = "The Coffee House";
-const char *password = "thecoffeehouse";
+const char *ssid = "Dooing Coffee Lab";
+const char *password = "dooingxinchao";
 
 // Firebase
 #include "FirebaseManager.h"
@@ -10,10 +10,10 @@ const char *password = "thecoffeehouse";
 #define DATABASE_URL "https://phy00007-kittycare-12b76-default-rtdb.asia-southeast1.firebasedatabase.app/"
 #define API_KEY "AIzaSyDkyy9evQOLVbS3s_bEAr42wEMYy5MdXio"
 #define PROJECT_ID "phy00007-kittycare-12b76"
-#define USER_ID "dz25B3bRLVfWFxG6t5377ZSshlw2"
-#define USER_EMAIL "npkhang287@gmail.com"
-#define USER_PASSWORD "khang2004"
-#define CAT_ID "0Q0rGIy5mcZu2VnpixdA"
+#define USER_ID "BGAH9swYkQM8hwkguIYf35kE3Xf1"
+#define USER_EMAIL "huynhyenngoc1910@gmail.com"
+#define USER_PASSWORD "19102004"
+#define CAT_ID "sQ5DmE4ijSZYd7AShiyc"
 FirebaseManager fm(DATABASE_URL, API_KEY, PROJECT_ID, USER_ID, USER_EMAIL, USER_PASSWORD, CAT_ID);
 
 // 1.1 refill thức ăn - Stepper Motor, Loadcell
@@ -28,7 +28,7 @@ RefillFood refillFood(SERVO_PIN, TURN_TIME, DT, _SCK);
 #define RELAY_PIN 16
 #define SENSOR_PIN 36
 #define POWER_PIN 17
-#define VOLUME_THRESHOLD 1000
+#define VOLUME_THRESHOLD 500
 RefillWater refillWater(RELAY_PIN, SENSOR_PIN, POWER_PIN, VOLUME_THRESHOLD);
 
 // Chức năng 2: bảo vệ & theo dõi hoạt động
@@ -102,6 +102,7 @@ void setup() {
 
   // firebase
   fm.init();
+  fm.setDeviceAuto(protect.getName(), false);
   fm.setDeviceAuto(door.getName(), false);
   fm.setDeviceAuto(fan.getName(), false);
   fm.setDeviceAuto(light.getName(), false);
@@ -133,12 +134,12 @@ uint8_t isUpdateEnvDone = true;
 // RefillWater
 
 void loop() {
-  logger.beginLoop();
 
-  logger.device(fm.getName());
   fm.loop();
+  logger.device(fm.getName());
   if (fm.isReady()) {
     logger.status("Ready");
+    logger.beginLoop();
 
     // 1.1 Stepper Motor, loadcell
     // [Firebase]: read/write
@@ -160,14 +161,11 @@ void loop() {
     }
     if (refillFood.isLow() || refillFood.getStatus()) {
       logger.status("On", false);
-      refillFood.on();
+      // refillFood.on();
       delay(3000);
       logger.status("Off");
-      refillFood.off();
-    } else {
-      refillFood.off();
+      // refillFood.off();
     }
-
     // 1.2 Water Sensor, Mini Water Pump, Relay
     // [Firebase]: read/write
     // [Value]: true/false
@@ -193,6 +191,7 @@ void loop() {
       logger.status("Off");
       refillWater.off();
     } else {
+      logger.status("Off");
       refillWater.off();
     }
 
@@ -203,11 +202,11 @@ void loop() {
     logger.device(protect.getName());
     protect.readDistanceCM();
     logger.value(protect.getDistance());
-    if (protect.isFar()) {
+    if (protect.isFar() && fm.getDeviceAuto<bool>(protect.getName())) {
       logger.status("Far");
       protect.on();
     } else {
-      logger.status("Near");
+      logger.status("Near or Auto off");
       protect.off();
     }
 
@@ -323,11 +322,17 @@ void loop() {
     if (dts.isNeedToRunTask()) {
       logger.device(dts.getName());
       logger.status("Updating food and drink yesterday...");
-      fm.updateFoodAndDrinkStatus(
+      fm.updateFoodAndDrinkDoc(
           refillFood.getSum(),
           refillWater.getSum());
       refillFood.resetSum();
       refillWater.resetSum();
+
+      logger.device(dts.getName());
+      logger.status("Updating environment yesterday...");
+      fm.updateEnvironmentDoc(
+          dht.getHumidity(),
+          dht.getTemperature());
     }
 
     unsigned long currentMillis = millis();
@@ -345,6 +350,7 @@ void loop() {
         fm.setDeviceStatus(refillWater.getName(), refillWater.getStatus());
         isUpdate = true;
       }
+
       if (protect.getStatus() != fm.getDeviceStatus<bool>(protect.getName())) {
         fm.setDeviceStatus(protect.getName(), protect.getStatus());
         isUpdate = true;
@@ -356,7 +362,7 @@ void loop() {
       }
 
       if (light.getStatus() != fm.getDeviceStatus<bool>(light.getName())) {
-        fm.setDeviceStatus(light.getName(), light.getLight());
+        fm.setDeviceStatus(light.getName(), light.getStatus());
         isUpdate = true;
       }
 
@@ -371,7 +377,7 @@ void loop() {
         lastUpdateStatusTime = currentMillis;
         isUpdateDone = false;
         fm.updateDevicesStatus();
-        delay(1000);
+        // delay(1000);
       }
     }
 
@@ -380,14 +386,14 @@ void loop() {
       lastGetStatusTime = currentMillis;
       isGetDone = false;
       fm.getDevicesStatus();
-      delay(1000);
+      // delay(1000);
     }
 
     if (currentMillis - lastGetAutoTime >= updateInterval / 2 && isGetAutoDone) {
       lastGetAutoTime = currentMillis;
       isGetAutoDone = false;
       fm.getDevicesAuto();
-      delay(1000);
+      // delay(1000);
     }
 
     if (currentMillis - lastUpdateEnvTime >= updateInterval / 2 && isUpdateEnvDone) {
@@ -396,10 +402,11 @@ void loop() {
       lastUpdateEnvTime = currentMillis;
       isUpdateEnvDone = false;
       fm.updateEnvironment();
-      delay(1000);
+      // delay(1000);
     }
   } else {
     logger.status("Not ready");
+    delay(200);
   }
 }
 
@@ -487,8 +494,13 @@ void printResult(AsyncResult &aResult) {
     isUpdateEnvDone = true;
   }
 
-  else if (aResult.uid().equals(fm.getNameCreateDocCats())) {
-    logger.device(fm.getNameCreateDocCats());
+  else if (aResult.uid().equals(fm.getNameCreateDocHealth())) {
+    logger.device(fm.getNameCreateDocHealth());
     logger.status("Update food and drink successfully");
+  }
+
+  else if (aResult.uid().equals(fm.getNameCreateDocEnv())) {
+    logger.device(fm.getNameCreateDocEnv());
+    logger.status("Update environment successfully");
   }
 }
