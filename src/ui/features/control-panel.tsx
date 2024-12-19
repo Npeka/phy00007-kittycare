@@ -67,9 +67,22 @@ export default function ControlPanel() {
         });
     }, [user]);
 
-    function updateDeviceStatus(device: keyof Devices, status: boolean) {
+    async function updateDeviceStatus(device: keyof Devices, status: boolean) {
         if (!user) return;
         const deviceRef = ref(database, `${user.uid}/devices/`);
+       /*
+        const response = await fetch(`http://localhost:3000/api/send-email/${user.uid}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                subject: `Thông báo từ KittyCare - ứng dụng chăm sóc thú cưng`,
+                text: `${device} đang được ${status ? 'Bật' : 'Tắt'}!`,
+            }),  
+        });
+        if (!response.ok) {
+            throw new Error('Failed to send email');
+        }
+        */
         update(deviceRef, { [device]: status });
         setDevices((prev) => ({ ...prev, [device]: status }));
     }
