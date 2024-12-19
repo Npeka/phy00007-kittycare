@@ -50,6 +50,18 @@ const ControlItem: React.FC<ControlItemProps> = ({
                     throw new Error('Failed to send email');
                 }
 
+                const mobileResponse = await fetch(`http://localhost:3000/api/notification`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: 'KittyCare Notification',
+                        body: `${name} đang được ${!isAuto ? 'Bật' : 'Tắt'} trong chế độ Tự động!`,
+                    }),
+                });
+
+                if (!mobileResponse.ok) {
+                    throw new Error('Failed to send notification');
+                }
                 console.log('Email sent successfully');
             } catch (error) {
                 console.error('Error sending email:', error);
