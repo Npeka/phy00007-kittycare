@@ -73,7 +73,6 @@ export default function InformationPanel() {
                 </Typography>
             </div>
 
-            <Image className="h-full grow rounded-2xl" src={cat} alt="my-cat" />
         </div>
     );
 }
