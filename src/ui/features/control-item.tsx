@@ -55,7 +55,7 @@ const ControlItem: React.FC<ControlItemProps> = ({
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: 'KittyCare Notification',
-                        body: `${name} đang được ${!isAuto ? 'Bật' : 'Tắt'} trong chế độ Tự động!`,
+                        body: `${name} ${!isAuto ? 'ĐANG TRONG' : 'THOÁT KHỎI'} chế độ Tự động!`,
                     }),
                 });
 
