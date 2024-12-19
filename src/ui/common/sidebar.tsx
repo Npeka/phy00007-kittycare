@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signOutUser } from '@/firebase/auth';
@@ -8,11 +8,39 @@ import { MenuList, MenuItem, ListItemText, ListItemIcon } from '@mui/material';
 import { ExitToApp } from '@mui/icons-material';
 import sidebarCat from '@/public/sidebar/cat.svg';
 import links from '@/ui/common/sidebar-link';
+import { AuthContext } from '@/context/auth-context';
 
 export default function Sidebar() {
     const router = useRouter();
+    const user = useContext(AuthContext);
     const handleSignOut = async () => {
         try {
+            const response = await fetch(`http://localhost:3000/api/send-email/${user.uid}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subject: `Thông báo từ KittyCare - ứng dụng chăm sóc thú cưng`,
+                    text: `Hẹn gặp lại bạn!`,
+                }),  
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to send email');
+            }
+    
+            const mobileResponse = await fetch(`http://localhost:3000/api/notification`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: 'KittyCare Notification',
+                    body: `Hẹn gặp lại bạn!`,
+                }),
+            });
+    
+            if (!mobileResponse.ok) {
+                throw new Error('Failed to send notification');
+            }
+            console.log('Email sent successfully');
             await signOutUser();
             router.push('/sign-in');
         } catch (error) {

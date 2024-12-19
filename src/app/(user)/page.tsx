@@ -24,8 +24,39 @@ export default function HomePage() {
         humidity: 0,
     });
 
+    async function handleNotification() {
+        const response = await fetch(`http://localhost:3000/api/send-email/${user.uid}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                subject: `Thông báo từ KittyCare - ứng dụng chăm sóc thú cưng`,
+                text: `Chào mừng bạn đến KittyCare!`,
+            }),  
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send email');
+        }
+
+        const mobileResponse = await fetch(`http://localhost:3000/api/notification`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: 'KittyCare Notification',
+                body: `Chào mừng bạn đến KittyCare!`,
+            }),
+        });
+
+        if (!mobileResponse.ok) {
+            throw new Error('Failed to send notification');
+        }
+        console.log('Email sent successfully');
+    }
+
     useEffect(() => {
         if (!user) return;
+
+        handleNotification();
         const envRef = ref(database, `${user.uid}/environment`);
         onValue(envRef, (snapshot) => {
             const data = snapshot.val();
