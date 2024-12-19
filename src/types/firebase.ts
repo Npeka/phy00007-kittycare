@@ -1,10 +1,12 @@
 export interface Auto {
+    protect: boolean;
     door: boolean;
     fan: boolean;
     light: boolean;
 }
 
 export interface Devices {
+    protect: boolean;
     light: boolean;
     fan: boolean;
     door: boolean;

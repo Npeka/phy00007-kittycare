@@ -4,7 +4,7 @@ export default function PetMonitoring() {
     return (
         <div className="space-y-4">
             <CameraLive />
-            <DataStorageHistory />
+            {/* <DataStorageHistory /> */}
         </div>
     );
 }

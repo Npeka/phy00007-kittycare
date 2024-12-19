@@ -20,7 +20,8 @@ const HomeCard = ({ children }: { children: React.ReactNode }) => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 borderRadius: '16px',
-                height: '100%',
+                height: '325px',
+                width: '100%',
             }}
         >
             {children}
@@ -54,15 +55,19 @@ export const Drink = memo(({ value }: { value: number }) => {
     return (
         <HomeCard>
             <div className="flex flex-col items-center">
-                <CardContent className="absolute top-[5%] left-[5%]">
-                    <CardTitle>{date}</CardTitle>
-                    <MeasurementUnit>{value}ml</MeasurementUnit>
+                <CardContent className="absolute left-[5%] right-[5%] top-[5%]">
+                    <CardTitle>Tổng lượng nước</CardTitle>
+                    <div className="flex items-center justify-between">
+                        <MeasurementUnit>{date}</MeasurementUnit>
+                        <MeasurementUnit>{value}ml</MeasurementUnit>
+                    </div>
                 </CardContent>
-                <Image                     
+
+                <Image
                     className="absolute bottom-[10%] left-[40%] w-[25%]"
-                    height="20" 
-                    src={water} 
-                    alt={'water'} 
+                    height="20"
+                    src={water}
+                    alt={'water'}
                 />
             </div>
         </HomeCard>
@@ -74,15 +79,19 @@ export const Food = memo(({ value }: { value: number }) => {
     return (
         <HomeCard>
             <div className="flex flex-col items-center">
-                <CardContent className="absolute top-[5%] left-[5%]">
-                    <CardTitle>{date}</CardTitle>
-                    <MeasurementUnit>{value}mg</MeasurementUnit>
+                <CardContent className="absolute left-[5%] right-[5%] top-[5%]">
+                    <CardTitle>Tổng lượng thức ăn</CardTitle>
+                    <div className="flex items-center justify-between">
+                        <MeasurementUnit>{date}</MeasurementUnit>
+                        <MeasurementUnit>{value}mg</MeasurementUnit>
+                    </div>
                 </CardContent>
-                <Image                     
+                <Image
                     className="absolute bottom-[10%] left-[25%] w-[50%]"
                     height="20"
-                    src={food} alt={'food'} 
-                    />
+                    src={food}
+                    alt={'food'}
+                />
             </div>
         </HomeCard>
     );

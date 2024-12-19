@@ -5,5 +5,14 @@ import doorIcon from './door-icon.svg';
 import waterIcon from './water-icon.svg';
 import foodIcon from './food-icon.svg';
 import gameIcon from './game-icon.svg';
+import protectIcon from './protect-icon.svg';
 
-export { lightIcon, fanIcon, doorIcon, waterIcon, foodIcon, gameIcon };
+export {
+    lightIcon,
+    fanIcon,
+    doorIcon,
+    waterIcon,
+    foodIcon,
+    gameIcon,
+    protectIcon,
+};

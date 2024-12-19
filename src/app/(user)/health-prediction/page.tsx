@@ -10,12 +10,14 @@ import {
 } from '@/ui/health-prediction/chart';
 import { getHealthLogsSorted, getEnvironmentLogsSorted } from '@/firebase/cat';
 import { Card, CardContent } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 
 export default function HealthPredictionPage() {
     const [analysis, setAnalysis] = useState(null);
     const user = useContext(AuthContext);
     const [dataFD, setDataFD] = useState<number[][]>([[], []]);
     const [dataTH, setDataTH] = useState<number[][]>([[], []]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (!user) return;
@@ -29,16 +31,17 @@ export default function HealthPredictionPage() {
             setDataTH(data[1]);
         };
 
-        const getAnalysis = async () => {
-            if (!user) return;
-            const res = await fetch(`/api/get-analysis/${user?.uid}`);
-            const data = await res.json();
-            setAnalysis(data);
-        };
-
         getData();
-        getAnalysis();
     }, [user]);
+
+    const getAnalysis = async () => {
+        if (!user) return;
+        setLoading(true);
+        const res = await fetch(`/api/get-analysis/${user?.uid}`);
+        const data = await res.json();
+        setAnalysis(data);
+        setLoading(false);
+    };
 
     return (
         <div className="space-y-8">
@@ -92,9 +95,19 @@ export default function HealthPredictionPage() {
                 </Card>
             </div>
 
-            <Typography variant="h6" sx={{ fontWeight: '400' }}>
-                {analysis}
-            </Typography>
+            <LoadingButton
+                variant="outlined"
+                color="success"
+                loading={loading}
+                onClick={() => getAnalysis()}
+            >
+                Phân tích
+            </LoadingButton>
+            {analysis && (
+                <Typography variant="h6" sx={{ fontWeight: '400' }}>
+                    {analysis}
+                </Typography>
+            )}
         </div>
     );
 }

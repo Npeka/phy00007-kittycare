@@ -18,6 +18,7 @@ import {
     waterIcon,
     foodIcon,
     gameIcon,
+    protectIcon,
 } from '@/public/features';
 import ControlItem from './control-item';
 import { TitleSection } from '@/ui/common';
@@ -30,6 +31,7 @@ import { useNotification } from '@/context/noti-context';
 export default function ControlPanel() {
     const user = useContext(AuthContext);
     const [devices, setDevices] = useState<Devices>({
+        protect: false,
         light: false,
         fan: false,
         door: false,
@@ -38,6 +40,7 @@ export default function ControlPanel() {
         refill_water: false,
     });
     const [auto, setAuto] = useState<Auto>({
+        protect: false,
         light: false,
         fan: false,
         door: false,
@@ -70,7 +73,7 @@ export default function ControlPanel() {
     async function updateDeviceStatus(device: keyof Devices, status: boolean) {
         if (!user) return;
         const deviceRef = ref(database, `${user.uid}/devices/`);
-       /*
+        /*
         const response = await fetch(`http://localhost:3000/api/send-email/${user.uid}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -103,7 +106,7 @@ export default function ControlPanel() {
             <TitleSection>Bảng điều khiển</TitleSection>
             <Schedule userId={user?.uid} />
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-4 gap-4">
                 <ControlItem
                     name="Đèn"
                     iconSrc={lightIcon}
@@ -127,6 +130,18 @@ export default function ControlPanel() {
                     onToggle={() => updateDeviceStatus('door', !devices.door)}
                     isAuto={auto.door}
                     onAutoToggle={() => updateAutoStatus('door', !auto.door)}
+                />
+                <ControlItem
+                    name="Thả chuồng"
+                    iconSrc={protectIcon}
+                    isOn={devices.protect}
+                    onToggle={() =>
+                        updateDeviceStatus('protect', !devices.protect)
+                    }
+                    isAuto={auto.protect}
+                    onAutoToggle={() =>
+                        updateAutoStatus('protect', !auto.protect)
+                    }
                 />
                 <ControlItem
                     name="Trò chơi"
@@ -171,6 +186,7 @@ const Schedule = ({ userId }: { userId: string }) => {
     );
 
     const [devices, setDevices] = useState<Devices>({
+        protect: false,
         light: false,
         fan: false,
         door: false,
@@ -252,6 +268,7 @@ const Schedule = ({ userId }: { userId: string }) => {
         fan: 'Quạt',
         door: 'Cửa chuồng',
         laser: 'Trò chơi',
+        protect: 'Thả chuồng',
         refill_food: 'Refill thức ăn',
         refill_water: 'Refill nước',
     };

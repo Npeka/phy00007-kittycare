@@ -9,13 +9,15 @@ import { AuthContext } from '@/context/auth-context';
 
 export default function NutritionLog() {
     const [isFetch, setIsFetch] = useState(false);
-    const [events, setEvents] = useState<{ title: string; date: string; color: string }[]>([]);
+    const [events, setEvents] = useState<
+        { title: string; date: string; color: string }[]
+    >([]);
     const user = useContext(AuthContext);
 
     useEffect(() => {
         if (!user) return;
         if (isFetch) return;
-        
+
         const fetchData = async () => {
             const response = await fetch(`api/get-health-logs/${user.uid}`);
             const data = await response.json();
@@ -25,17 +27,17 @@ export default function NutritionLog() {
                     title: `${data[i].drink}ml 💧`,
                     date: data[i].time,
                     color: '#b3e5fc',
-                }
+                };
                 const food = {
                     title: `${data[i].food}g 🍖`,
                     date: data[i].time,
                     color: '#ffcdd2',
-                }
+                };
                 newEvents.push(drink);
                 newEvents.push(food);
             }
             setEvents(newEvents);
-        }
+        };
         fetchData();
         setIsFetch(true);
     }, [user]);

@@ -54,11 +54,13 @@ export const signUpUser = async (
         const dataRef = user.uid;
         const nullObj: Data = {
             auto: {
+                protect: false,
                 door: false,
                 fan: false,
                 light: false,
             },
             devices: {
+                protect: false,
                 door: false,
                 fan: false,
                 laser: false,
