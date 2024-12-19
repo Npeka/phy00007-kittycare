@@ -31,7 +31,7 @@ void Protect::readDistanceCM() {
 }
 
 bool Protect::isFar() const {
-  return distance > 2;
+  return distance > 4;
 }
 
 void Protect::on() {

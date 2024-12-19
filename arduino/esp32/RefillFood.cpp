@@ -32,9 +32,10 @@ bool RefillFood::isReady() {
 }
 
 void RefillFood::readWeight() {
-  loadcell.set_scale(-103525);
+  loadcell.set_scale(-103522.401);
   float w = loadcell.get_units() * 1000;
   if (w < 0) {
+    loadcell.tare();
     w = 0;
   }
   weight = w;

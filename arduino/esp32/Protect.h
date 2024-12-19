@@ -9,7 +9,7 @@ private:
   uint8_t echoPin;
   uint8_t ledPin;
   uint8_t buzzerPin;
-  uint8_t distance;
+  float distance;
   bool status;
 
 public:

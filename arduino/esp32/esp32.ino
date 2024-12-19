@@ -1,7 +1,7 @@
 // Wi-Fi
 #include <WiFi.h>
-const char *ssid = "Dooing Coffee Lab";
-const char *password = "dooingxinchao";
+const char *ssid = "Pokemon";
+const char *password = "11112222";
 
 // Firebase
 #include "FirebaseManager.h"
@@ -58,7 +58,7 @@ Light light(LED_PIN_2, LDR_PIN);
 // Chức năng 5: đóng cửa chuồng - Servo
 #include "Door.h"
 #define SERVO_PIN_2 25
-#define TURN_TIME_2 225
+#define TURN_TIME_2 275
 Door door(SERVO_PIN_2, TURN_TIME_2);
 
 // Chức năng 6: đo sức khỏe - AI
@@ -148,23 +148,25 @@ void loop() {
     // [Status]: on/off
     logger.device(refillFood.getName());
     float g = refillFood.getWeight();
-    refillFood.readWeight();
     logger.value(g);
+    refillFood.readWeight();
     float g_now = refillFood.getWeight();
     logger.value(g_now);
-    if (g_now < g && g - g_now > 3) {
+    if (g > g_now && g - g_now > 3) {
       logger.value(g - g_now);
       refillFood.sum(g - g_now);
       fm.setEnvironment(
           refillFood.getNameFood(),
           refillFood.getSum());
     }
-    if (refillFood.isLow() || refillFood.getStatus()) {
+    if (refillFood.getStatus()) {
       logger.status("On", false);
-      // refillFood.on();
+      refillFood.on();
       delay(3000);
       logger.status("Off");
-      // refillFood.off();
+      refillFood.off();
+    } else {
+      logger.status("Off");
     }
     // 1.2 Water Sensor, Mini Water Pump, Relay
     // [Firebase]: read/write
@@ -184,7 +186,7 @@ void loop() {
           refillWater.getNameDrink(),
           refillWater.getSum());
     }
-    if ((refillWater.isLow() || refillWater.getStatus()) && !refillWater.isHigh()) {
+    if (refillWater.getStatus()) {
       logger.status("On", false);
       refillWater.on();
       delay(3000);
@@ -258,7 +260,6 @@ void loop() {
         logger.status("Closed");
         door.close();
       }
-      fm.setDeviceStatus(door.getName(), door.getStatus());
     } else {
       logger.device(door.getName());
       if (door.getStatus() && !door.getLastStatus()) {
