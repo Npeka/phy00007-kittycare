@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
         
         const querySnapshot = await getDocs(analysisQuery);
         if (querySnapshot.empty) {
-            return NextResponse.json("Chưa có phân tích nào", { status: 404 });
+            return NextResponse.json(null, { status: 404 });
         }
 
         const latestAnalysis = querySnapshot.docs[0].data().responseText;

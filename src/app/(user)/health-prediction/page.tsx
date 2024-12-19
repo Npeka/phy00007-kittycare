@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '@/context/auth-context';
-import { Typography } from '@mui/material';
+import { Typography, Button, CircularProgress } from '@mui/material';
 import {
     FoodChart,
     DrinkChart,
@@ -14,6 +14,7 @@ import { LoadingButton } from '@mui/lab';
 
 export default function HealthPredictionPage() {
     const [analysis, setAnalysis] = useState(null);
+    const [loading2, setLoading2] = useState(false);
     const user = useContext(AuthContext);
     const [dataFD, setDataFD] = useState<number[][]>([[], []]);
     const [dataTH, setDataTH] = useState<number[][]>([[], []]);
@@ -34,17 +35,24 @@ export default function HealthPredictionPage() {
         getData();
     }, [user]);
 
-    const getAnalysis = async () => {
+    const handleCreateAnalysis = async () => {
         if (!user) return;
-        setLoading(true);
-        const res = await fetch(`/api/get-analysis/${user?.uid}`);
-        const data = await res.json();
-        setAnalysis(data);
-        setLoading(false);
+        setLoading2(true);
+        try {
+            const res = await fetch(`/api/create-analysis/${user?.uid}`, {
+                method: 'POST',
+            });
+            const data = await res.json();
+            setAnalysis(data);
+        } catch (error) {
+            console.error('Failed to create analysis:', error);
+        } finally {
+            setLoading2(false);
+        }
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 select-none">
             <LastWeekDate />
             <Typography
                 variant="h5"
@@ -95,19 +103,20 @@ export default function HealthPredictionPage() {
                 </Card>
             </div>
 
-            <LoadingButton
-                variant="outlined"
-                color="success"
-                loading={loading}
-                onClick={() => getAnalysis()}
-            >
-                Phân tích
-            </LoadingButton>
-            {analysis && (
-                <Typography variant="h6" sx={{ fontWeight: '400' }}>
-                    {analysis}
-                </Typography>
-            )}
+            <div className="flex justify-center space-x-4">
+                <Button
+                    variant="outlined"
+                    color="success"
+                    onClick={handleCreateAnalysis}
+                    disabled={loading2}
+                >
+                    {loading2 ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Tạo phân tích mới'}
+                </Button>
+            </div>
+
+            <Typography className={analysis === null ? 'text-center' : 'text-justify'} variant="h6" sx={{ fontWeight: '400' }}>
+                {analysis !== null ? analysis : 'Chưa có dữ liệu phân tích'}
+            </Typography>
         </div>
     );
 }

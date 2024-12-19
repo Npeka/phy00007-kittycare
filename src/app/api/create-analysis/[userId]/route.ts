@@ -119,7 +119,7 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
             responseText,
             createdAt: new Date(), 
         });
-        return NextResponse.json({message: "Update analysis data successfully"}, jsonHeader);
+        return NextResponse.json(responseText, jsonHeader);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         console.error(e.message);
