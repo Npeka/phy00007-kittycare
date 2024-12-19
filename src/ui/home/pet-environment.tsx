@@ -53,11 +53,18 @@ export const Drink = memo(({ value }: { value: number }) => {
     const date = new Date().toLocaleDateString('vi-VN');
     return (
         <HomeCard>
-            <CardContent>
-                <CardTitle>{date}</CardTitle>
-                <MeasurementUnit>{value}ml</MeasurementUnit>
-            </CardContent>
-            <Image className="mr-4" src={water} alt={'water'} height={120} />
+            <div className="flex flex-col items-center">
+                <CardContent className="absolute top-[5%] left-[5%]">
+                    <CardTitle>{date}</CardTitle>
+                    <MeasurementUnit>{value}ml</MeasurementUnit>
+                </CardContent>
+                <Image                     
+                    className="absolute bottom-[10%] left-[40%] w-[25%]"
+                    height="20" 
+                    src={water} 
+                    alt={'water'} 
+                />
+            </div>
         </HomeCard>
     );
 });
@@ -66,11 +73,17 @@ export const Food = memo(({ value }: { value: number }) => {
     const date = new Date().toLocaleDateString('vi-VN');
     return (
         <HomeCard>
-            <CardContent>
-                <CardTitle>{date}</CardTitle>
-                <MeasurementUnit>{value}mg</MeasurementUnit>
-            </CardContent>
-            <Image className="mr-4" src={food} alt={'food'} height={70} />
+            <div className="flex flex-col items-center">
+                <CardContent className="absolute top-[5%] left-[5%]">
+                    <CardTitle>{date}</CardTitle>
+                    <MeasurementUnit>{value}mg</MeasurementUnit>
+                </CardContent>
+                <Image                     
+                    className="absolute bottom-[10%] left-[25%] w-[50%]"
+                    height="20"
+                    src={food} alt={'food'} 
+                    />
+            </div>
         </HomeCard>
     );
 });
