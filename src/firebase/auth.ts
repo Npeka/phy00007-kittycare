@@ -85,7 +85,46 @@ export const signUpUser = async (
 
 export const signInUser = async (email: string, password: string) => {
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const isSuccess = await signInWithEmailAndPassword(auth, email, password);
+        if (!isSuccess) {
+            throw new Error('Failed to sign in');
+        }
+        const handleNotification = async () => {
+            const response = await fetch(
+                `http://localhost:3000/api/send-email/${user.uid}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        subject: `Thông báo từ KittyCare - ứng dụng chăm sóc thú cưng`,
+                        text: `Chào mừng bạn đến KittyCare!`,
+                    }),
+                },
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to send email');
+            }
+
+            const mobileResponse = await fetch(
+                `http://localhost:3000/api/notification`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: 'KittyCare Notification',
+                        body: `Chào mừng bạn đến KittyCare!`,
+                    }),
+                },
+            );
+
+            if (!mobileResponse.ok) {
+                throw new Error('Failed to send notification');
+            }
+            console.log('Email sent successfully');
+        };
+
+        handleNotification();
     } catch (error) {
         console.log(error);
         throw error;
