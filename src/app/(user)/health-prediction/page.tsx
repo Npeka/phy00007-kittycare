@@ -20,6 +20,19 @@ export default function HealthPredictionPage() {
     const [dataTH, setDataTH] = useState<number[][]>([[], []]);
     const [loading, setLoading] = useState<boolean>(false);
 
+    const getAnalysis = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/get-analysis/${user?.uid}`);
+            const data = await res.json();
+            setAnalysis(data);
+        } catch (error) {
+            console.error('Failed to get analysis:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     useEffect(() => {
         if (!user) return;
         const getData = async () => {
@@ -31,7 +44,7 @@ export default function HealthPredictionPage() {
             setDataFD(data[0]);
             setDataTH(data[1]);
         };
-
+        getAnalysis();
         getData();
     }, [user]);
 

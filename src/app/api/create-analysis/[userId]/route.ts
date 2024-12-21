@@ -1,7 +1,5 @@
 import {
-    Message as VercelChatMessage,
-    StreamingTextResponse,
-    createStreamDataTransformer
+    Message as VercelChatMessage
 } from 'ai';
 import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
@@ -12,6 +10,8 @@ import { getFirestore, collection, getDocs, query, where, Firestore, doc, addDoc
 import app from '../../../../firebase/config';
 const jsonHeader = { headers: { 'Content-Type': 'application/json' } };
 const db = getFirestore(app);
+import nodemailer from 'nodemailer';
+
 /**
  * Basic memory formatter that stringifies and passes
  * message history directly into the model.
@@ -34,6 +34,14 @@ Current cat's nutrition information:
 
 assistant:`;
 
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MAIL_USER, 
+    pass: process.env.MAIL_PASSWORD,  
+  },
+});
 
 export async function POST(req: NextRequest, { params }: { params: { userId: string } }) {
     try {
@@ -119,6 +127,22 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
             responseText,
             createdAt: new Date(), 
         });
+
+        const userQuery = await getDocs(collection(db, 'users'));
+            const userDoc = userQuery.docs.find(doc => doc.id === userId);
+            if (!userDoc) {
+                return NextResponse.json({ error: 'User not found' }, { status: 404 });
+            }
+        
+        const mailOptions = {
+            from: process.env.MAIL_FROM,  
+            to: userDoc.data().email,                            
+            subject: 'Kết quả phân tích sức khỏe thú cưng',                       
+            text: responseText,                         
+          };
+            
+        const info = await transporter.sendMail(mailOptions);
+          
         return NextResponse.json(responseText, jsonHeader);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
