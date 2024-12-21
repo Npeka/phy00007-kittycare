@@ -39,17 +39,22 @@ export default function UserLayout({
     useEffect(() => {
         if (!user) return;
 
-        const deviceRef = ref(database, `${user.uid}/devices`);
-        onValue(deviceRef, (snapshot) => {
+ 
+        const deviceRef = ref(database, `${user.uid}`);
+        onValue(deviceRef, async (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
-            const { protect } = data;
+            const { protect: isProtected } = data.auto;
+            if (isProtected === undefined || isProtected === false) return;
+            const { protect } = data.devices
+            if (protect === undefined) return;
+            console.log(protect);
             if (protect !== isEscaped) {
                 setIsEscaped(protect);
-                handleNotification(protect);
+                await handleNotification(protect);
             }
         });
-    });
+    }, [user]);
     return (
         <ProtectedRoutes>
             <div className="grid max-h-screen min-h-screen grid-cols-12 grid-rows-[max-content_1fr] gap-8 bg-[#edf8e8] p-8">
