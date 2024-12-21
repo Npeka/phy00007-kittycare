@@ -8,7 +8,6 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { HttpResponseOutputParser } from 'langchain/output_parsers';
 import { NextRequest, NextResponse } from 'next/server';
 import app from '../../../../firebase/config';
-const jsonHeader = { headers: { 'Content-Type': 'application/json' } };
 export const dynamic = 'force-dynamic'
 import { Environment } from '@/types/firebase';
 import { collection, doc, getDocs, getFirestore, query, where } from 'firebase/firestore';

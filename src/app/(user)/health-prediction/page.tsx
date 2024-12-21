@@ -10,7 +10,6 @@ import {
 } from '@/ui/health-prediction/chart';
 import { getHealthLogsSorted, getEnvironmentLogsSorted } from '@/firebase/cat';
 import { Card, CardContent } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
 
 export default function HealthPredictionPage() {
     const [analysis, setAnalysis] = useState(null);
@@ -18,7 +17,6 @@ export default function HealthPredictionPage() {
     const user = useContext(AuthContext);
     const [dataFD, setDataFD] = useState<number[][]>([[], []]);
     const [dataTH, setDataTH] = useState<number[][]>([[], []]);
-    const [loading, setLoading] = useState<boolean>(false);
 
     const getAnalysis = async () => {
         setLoading(true);
@@ -32,7 +30,7 @@ export default function HealthPredictionPage() {
             setLoading(false);
         }
     };
-    
+
     useEffect(() => {
         if (!user) return;
         const getData = async () => {
