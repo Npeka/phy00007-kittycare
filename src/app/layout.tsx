@@ -1,6 +1,7 @@
 import localFont from 'next/font/local';
 import type { Metadata } from 'next';
 import { KittyCareTheme } from './theme';
+import ProtectedRoutes from '@/context/auth-context';
 import './globals.css';
 
 const geistSans = localFont({
@@ -30,7 +31,9 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <KittyCareTheme>{children}</KittyCareTheme>
+                <KittyCareTheme>
+                    <ProtectedRoutes>{children}</ProtectedRoutes>
+                </KittyCareTheme>
             </body>
         </html>
     );
