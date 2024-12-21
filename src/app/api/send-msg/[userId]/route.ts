@@ -32,8 +32,14 @@ Current conversation:
 Current environment:
 {environment}
 
+Last 7 days environment:
+{last7days_env}
+
 Current cat information:
 {cat_info}
+
+Last 7 days cat's nutrition information:
+{nutrition}
 
 user: {input}
 assistant:`;
@@ -77,8 +83,50 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
 
         const formattedCatInfo: string=`Tên thú cưng: ${cat[0].name}, Tuổi: ${cat[0].age}, Chiều cao: ${cat[0].height} cm, Cân nặng: ${cat[0].weight} kg \n`;
         
+        /* temp and humid for last 7 days */
+        const currentDate = new Date();
+        const last7Days = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        const q = query(
+            collection(dtb, 'env'),
+            where('date', '>=', last7Days),
+            where('date', '<=', currentDate),
+        );
+        const querySnapshot = await getDocs(q);
+        const dataEnv = querySnapshot.docs.map(doc => {
+            let { humid, temp, date } = doc.data();
+            date = date.toDate().toLocaleTimeString('vi-VN', {  day: 'numeric', month: 'numeric', year: 'numeric'});
+            date = date.split(' ')[1].replaceAll('/', '-');
+            
+            let [day, month, year] = date.split('-');
+            if (day.length < 2) day = `0${day}`;
+            const formattedDate = `${day}-${month}-${year}`;
+            return { humid, temp, date: formattedDate };
+        });
 
+        const formattedEnv: string = dataEnv.map(d => `Ngày ${d.date}: Nhiệt độ: ${d.temp}°C, Độ ẩm: ${d.humid}%`).join('\n');
+
+        /* food and drink for last 7 days */
+        const queryNutrition = query(
+            collection(dtb, 'health'),
+            where('date', '>=', last7Days),
+            where('date', '<=', currentDate),
+        );
+        const querySnapshotNutrition = await getDocs(queryNutrition);
+        const nutrition = querySnapshotNutrition.docs.map(doc => {
+            let { food, drink, date } = doc.data();
+            date = date.toDate().toLocaleTimeString('vi-VN', {  day: 'numeric', month: 'numeric', year: 'numeric'});
+            date = date.split(' ')[1].replaceAll('/', '-');
+            
+            let [day, month, year] = date.split('-');
+            if (day.length < 2) day = `0${day}`;
+            const formattedDate = `${day}-${month}-${year}`;
+            return { food, drink, date: formattedDate };
+        });
+
+        const formattedNutrition: string = nutrition.map(n => `Ngày ${n.date}: Thức ăn: ${n.food} g, Nước uống: ${n.drink} ml`).join('\n');
         const data : Environment = await getDataFromFirebase();
+        
         const environment: string = 'Temperature: ' + String(data.temperature) + '°C, Humidity: ' + String(data.humidity) + '% \n';
         const prompt = PromptTemplate.fromTemplate(TEMPLATE);
 
@@ -96,6 +144,8 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
         const stream = await chain.stream({
             chat_history: formattedPreviousMessages.join('\n'),
             environment: environment, 
+            last7days_env: formattedEnv,
+            nutrition: formattedNutrition,
             cat_info: formattedCatInfo,
             input: currentMessageContent,
         });
