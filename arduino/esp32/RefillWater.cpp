@@ -43,14 +43,6 @@ void RefillWater::resetSum() {
   sumMl = 0;
 }
 
-bool RefillWater::isLow() const {
-  return volume < volumeThreshold / 4;
-}
-
-bool RefillWater::isHigh() const {
-  return volume > volumeThreshold * 3 / 4;
-}
-
 void RefillWater::on() {
   digitalWrite(relayPin, LOW);
   status = true;

@@ -26,8 +26,6 @@ public:
   void sum(const uint16_t &ml);
   float getSum() const;
   void resetSum();
-  bool isLow() const;
-  bool isHigh() const;
   void on();
   void off();
   bool getStatus() const;
