@@ -17,7 +17,8 @@ export default function HealthPredictionPage() {
     const user = useContext(AuthContext);
     const [dataFD, setDataFD] = useState<number[][]>([[], []]);
     const [dataTH, setDataTH] = useState<number[][]>([[], []]);
-
+    const [loading, setLoading] = useState(false);
+    
     const getAnalysis = async () => {
         setLoading(true);
         try {
